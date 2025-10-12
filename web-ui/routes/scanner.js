@@ -171,6 +171,69 @@ router.get('/:scanId', (req, res) => {
   });
 });
 
+// Start malware scan
+router.post('/malware-scan', (req, res) => {
+  const scanId = Date.now().toString();
+  const scriptPath = path.join(SCRIPTS_DIR, 'malware-scanner.sh');
+  
+  const scan = {
+    type: 'malware',
+    status: 'running',
+    startTime: new Date().toISOString(),
+    output: [],
+    process: null
+  };
+
+  const proc = spawn('bash', [scriptPath], {
+    cwd: SCRIPTS_DIR,
+    env: { ...process.env, HOME: os.homedir() }
+  });
+
+  scan.process = proc;
+  activeScans.set(scanId, scan);
+
+  proc.stdout.on('data', (data) => {
+    const lines = data.toString().split('\n');
+    scan.output.push(...lines);
+    
+    if (global.broadcast) {
+      global.broadcast({
+        type: 'scan_progress',
+        scanId,
+        output: lines
+      });
+    }
+  });
+
+  proc.stderr.on('data', (data) => {
+    const lines = data.toString().split('\n');
+    scan.output.push(...lines);
+  });
+
+  proc.on('close', (code) => {
+    scan.status = code === 0 ? 'completed' : 'failed';
+    scan.endTime = new Date().toISOString();
+    scan.exitCode = code;
+
+    if (global.broadcast) {
+      global.broadcast({
+        type: 'scan_complete',
+        scanId,
+        status: scan.status,
+        exitCode: code
+      });
+    }
+
+    setTimeout(() => activeScans.delete(scanId), 300000);
+  });
+
+  res.json({
+    success: true,
+    scanId,
+    message: 'Malware scan started successfully'
+  });
+});
+
 // Stop a running scan
 router.post('/:scanId/stop', (req, res) => {
   const { scanId } = req.params;

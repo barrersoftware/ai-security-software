@@ -146,6 +146,34 @@ function initButtons() {
         showModal('codeReviewModal');
     });
     
+    // Start malware scan
+    document.getElementById('startMalwareScan').addEventListener('click', async () => {
+        const button = document.getElementById('startMalwareScan');
+        const originalHTML = button.innerHTML;
+        button.disabled = true;
+        button.innerHTML = '<span class="btn-icon">🦠</span><span class="btn-text"><strong>Starting...</strong><small>Please wait</small></span>';
+        
+        try {
+            const response = await fetch('/api/scanner/malware-scan', { method: 'POST' });
+            const data = await response.json();
+            
+            if (data.success) {
+                currentScanId = data.scanId;
+                addActivity('Malware & rootkit scan started (this may take 15-30 minutes)', 'success');
+                showTab('scanner');
+                loadActiveScans();
+            } else {
+                addActivity('Failed to start malware scan', 'error');
+            }
+        } catch (error) {
+            console.error('Error starting malware scan:', error);
+            addActivity('Error starting malware scan: ' + error.message, 'error');
+        } finally {
+            button.disabled = false;
+            button.innerHTML = originalHTML;
+        }
+    });
+    
     document.getElementById('confirmCodeReview').addEventListener('click', async () => {
         const path = document.getElementById('codePathInput').value.trim();
         if (!path) {

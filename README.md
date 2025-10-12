@@ -12,6 +12,7 @@ Comprehensive security analysis tools using local Large Language Models (LLMs) f
 
 - **🔍 Comprehensive Security Scanning** - Full system audits with AI-powered analysis
 - **🛡️ Real-time Threat Monitoring** - Live log analysis with instant threat assessment
+- **🦠 Malware & Rootkit Detection** - ClamAV, rkhunter, chkrootkit with AI analysis
 - **📋 Code Security Review** - Automated vulnerability detection in code
 - **💬 Interactive Security Assistant** - Chat with AI security expert
 - **🔒 100% Private** - Runs entirely on your infrastructure, zero external calls
@@ -144,7 +145,23 @@ Scans code for vulnerabilities including SQL injection, XSS, command injection, 
 
 **Supported languages:** JavaScript, Python, PHP, Shell, Java, Ruby, Go
 
-### 4. Interactive Security Assistant
+### 4. Malware & Rootkit Scanner
+```bash
+./scripts/malware-scanner.sh
+```
+Comprehensive malware detection using ClamAV, rkhunter, chkrootkit, and AI analysis.
+
+**What it does:**
+- Virus and malware scanning (ClamAV)
+- Rootkit detection (rkhunter, chkrootkit)
+- Process and network analysis
+- Web shell detection
+- File system anomaly detection
+- AI-powered threat analysis
+
+**Windows version:** `.\windows\scripts\MalwareScanner.ps1` (uses Windows Defender)
+
+### 5. Interactive Security Assistant
 ```bash
 ./scripts/security-chat.sh
 ```
@@ -528,8 +545,9 @@ See [compliance/README.md](compliance/README.md) for full documentation.
 - [x] ✅ Kubernetes security scanning
 - [x] ✅ Database security analysis
 - [x] ✅ Compliance framework templates (PCI-DSS, HIPAA, SOC2, GDPR)
+- [x] ✅ Malware, virus, and rootkit detection (Linux & Windows)
 
-**🎉 100% Complete!** All roadmap features implemented!
+**🎉 100% Complete!** All roadmap features implemented plus malware detection!
 
 ---
 

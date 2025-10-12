@@ -303,6 +303,15 @@ header h1 {
     background: #475569;
 }
 
+.btn-danger {
+    background: #dc2626;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #b91c1c;
+}
+
 .btn-sm {
     padding: 8px 16px;
     font-size: 0.9em;

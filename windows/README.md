@@ -7,10 +7,11 @@ Enterprise-grade security analysis for Windows servers and workstations, powered
 - ✅ **Windows Server Security** - IIS, Active Directory, RDP analysis
 - ✅ **PowerShell Integration** - Native Windows administration
 - ✅ **Event Log Analysis** - Security, System, Application logs
-- ✅ **Windows Defender** - Antivirus status and configuration
+- ✅ **Windows Defender** - Antivirus status, scanning, and configuration
+- ✅ **Malware & Rootkit Detection** - Comprehensive threat scanning with AI analysis
 - ✅ **SMB Security** - Network share and SMB version checks
 - ✅ **Firewall Analysis** - Windows Firewall configuration review
-- ✅ **Registry Security** - Security-critical registry settings
+- ✅ **Registry Security** - Security-critical registry settings and persistence detection
 - ✅ **Active Directory** - Domain security assessment (when applicable)
 
 ## Requirements
@@ -113,7 +114,30 @@ cd "$env:ProgramFiles\AISecurityScanner"
 
 **Output:** Detailed report in `Documents\SecurityReports\`
 
-### 2. Interactive Security Assistant
+### 2. Malware & Rootkit Scanner
+
+Comprehensive malware detection with Windows Defender:
+
+```powershell
+.\MalwareScanner.ps1
+# OR for quick scan
+.\MalwareScanner.ps1 -QuickScan
+# OR for full scan
+.\MalwareScanner.ps1 -FullScan
+```
+
+**What it scans:**
+- Windows Defender virus/malware scan with latest definitions
+- Running processes and network connections
+- File system for malware indicators (temp files, hidden files, startup items)
+- Registry persistence mechanisms
+- Web shells in IIS directories
+- Network configuration and suspicious DNS queries
+- Scheduled tasks and autorun locations
+
+**Output:** Detailed report in `Documents\security-reports\malware_scan_*.md`
+
+### 3. Interactive Security Assistant
 
 Chat with AI security expert:
 
@@ -127,7 +151,7 @@ Chat with AI security expert:
 - "How to detect if my Windows server is compromised?"
 - "Analyze this suspicious PowerShell command: [command]"
 
-### 3. Code Security Review
+### 4. Code Security Review
 
 Scan code for vulnerabilities:
 
