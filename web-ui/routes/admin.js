@@ -276,4 +276,134 @@ router.get('/health', auth.requireAuth, auth.requireAdmin, async (req, res) => {
     }
 });
 
+// Intrusion Detection - Get stats
+router.get('/security/ids/stats', auth.requireAuth, auth.requireAdmin, async (req, res) => {
+    try {
+        const ids = require('../intrusion-detection');
+        const stats = await ids.getStats();
+        res.json(stats);
+    } catch (error) {
+        await security.logApp('error', 'IDS stats failed', { error: error.message });
+        res.status(500).json({ error: 'Failed to get IDS statistics' });
+    }
+});
+
+// Intrusion Detection - Whitelist IP
+router.post('/security/ids/whitelist', auth.requireAuth, auth.requireAdmin, async (req, res) => {
+    try {
+        const { ip } = req.body;
+        const ids = require('../intrusion-detection');
+        
+        await ids.addToWhitelist(ip);
+        await security.logUserAction('IP_WHITELISTED', req.user.userId, req.user.username, {
+            ip: ip,
+            adminIp: req.ip
+        });
+        
+        res.json({ success: true, message: `IP ${ip} added to whitelist` });
+    } catch (error) {
+        await security.logApp('error', 'Whitelist IP failed', { error: error.message });
+        res.status(500).json({ error: 'Failed to whitelist IP' });
+    }
+});
+
+// Intrusion Detection - Blacklist IP
+router.post('/security/ids/blacklist', auth.requireAuth, auth.requireAdmin, async (req, res) => {
+    try {
+        const { ip } = req.body;
+        const ids = require('../intrusion-detection');
+        
+        await ids.addToBlacklist(ip);
+        await security.logUserAction('IP_BLACKLISTED', req.user.userId, req.user.username, {
+            ip: ip,
+            adminIp: req.ip
+        });
+        
+        res.json({ success: true, message: `IP ${ip} added to blacklist` });
+    } catch (error) {
+        await security.logApp('error', 'Blacklist IP failed', { error: error.message });
+        res.status(500).json({ error: 'Failed to blacklist IP' });
+    }
+});
+
+// Intrusion Detection - Remove from blacklist
+router.delete('/security/ids/blacklist/:ip', auth.requireAuth, auth.requireAdmin, async (req, res) => {
+    try {
+        const { ip } = req.params;
+        const ids = require('../intrusion-detection');
+        
+        await ids.removeFromBlacklist(ip);
+        await security.logUserAction('IP_UNBLACKLISTED', req.user.userId, req.user.username, {
+            ip: ip,
+            adminIp: req.ip
+        });
+        
+        res.json({ success: true, message: `IP ${ip} removed from blacklist` });
+    } catch (error) {
+        await security.logApp('error', 'Unblacklist IP failed', { error: error.message });
+        res.status(500).json({ error: 'Failed to remove IP from blacklist' });
+    }
+});
+
+// Secrets Rotation - Get status
+router.get('/security/rotation/status', auth.requireAuth, auth.requireAdmin, async (req, res) => {
+    try {
+        const rotation = require('../secrets-rotation');
+        const status = await rotation.getRotationStatus();
+        const recommendations = await rotation.getRecommendations();
+        
+        res.json({ status, recommendations });
+    } catch (error) {
+        await security.logApp('error', 'Rotation status failed', { error: error.message });
+        res.status(500).json({ error: 'Failed to get rotation status' });
+    }
+});
+
+// Secrets Rotation - Rotate session secret
+router.post('/security/rotation/session', auth.requireAuth, auth.requireAdmin, async (req, res) => {
+    try {
+        const rotation = require('../secrets-rotation');
+        const result = await rotation.rotateSessionSecret();
+        
+        await security.logUserAction('SESSION_SECRET_ROTATED', req.user.userId, req.user.username, {
+            adminIp: req.ip
+        });
+        
+        res.json(result);
+    } catch (error) {
+        await security.logApp('error', 'Session secret rotation failed', { error: error.message });
+        res.status(500).json({ error: 'Failed to rotate session secret' });
+    }
+});
+
+// Secrets Rotation - Rotate MFA key
+router.post('/security/rotation/mfa', auth.requireAuth, auth.requireAdmin, async (req, res) => {
+    try {
+        const rotation = require('../secrets-rotation');
+        const result = await rotation.rotateMFAKey();
+        
+        await security.logUserAction('MFA_KEY_ROTATED', req.user.userId, req.user.username, {
+            adminIp: req.ip
+        });
+        
+        res.json(result);
+    } catch (error) {
+        await security.logApp('error', 'MFA key rotation failed', { error: error.message });
+        res.status(500).json({ error: 'Failed to rotate MFA key' });
+    }
+});
+
+// Secrets Rotation - Get history
+router.get('/security/rotation/history', auth.requireAuth, auth.requireAdmin, async (req, res) => {
+    try {
+        const rotation = require('../secrets-rotation');
+        const history = await rotation.getHistory(50);
+        
+        res.json({ history });
+    } catch (error) {
+        await security.logApp('error', 'Rotation history failed', { error: error.message });
+        res.status(500).json({ error: 'Failed to get rotation history' });
+    }
+});
+
 module.exports = router;

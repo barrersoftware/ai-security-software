@@ -281,6 +281,139 @@ class SecurityManager {
     }
 
     /**
+     * Validate request payload
+     */
+    validateRequestPayload(payload, maxSize = 1024 * 1024) { // 1MB default
+        if (!payload) {
+            return { valid: true };
+        }
+
+        const size = JSON.stringify(payload).length;
+        
+        if (size > maxSize) {
+            return { valid: false, error: 'Request payload too large' };
+        }
+
+        return { valid: true };
+    }
+
+    /**
+     * Detect SQL injection attempts
+     */
+    detectSQLInjection(input) {
+        if (typeof input !== 'string') return false;
+
+        const sqlPatterns = [
+            /(\bUNION\b.*\bSELECT\b)|(\bSELECT\b.*\bFROM\b)/i,
+            /(\bINSERT\b.*\bINTO\b)|(\bUPDATE\b.*\bSET\b)/i,
+            /(\bDELETE\b.*\bFROM\b)|(\bDROP\b.*\bTABLE\b)/i,
+            /(--)|(\#)|(\bOR\b\s+\d+\s*=\s*\d+)/i,
+            /(\bAND\b\s+\d+\s*=\s*\d+)|('.*OR.*'.*=.*')/i
+        ];
+
+        return sqlPatterns.some(pattern => pattern.test(input));
+    }
+
+    /**
+     * Detect XSS attempts
+     */
+    detectXSS(input) {
+        if (typeof input !== 'string') return false;
+
+        const xssPatterns = [
+            /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+            /javascript:/gi,
+            /on\w+\s*=\s*["'][^"']*["']/gi,
+            /<iframe\b/gi,
+            /<object\b/gi,
+            /<embed\b/gi
+        ];
+
+        return xssPatterns.some(pattern => pattern.test(input));
+    }
+
+    /**
+     * Detect path traversal attempts
+     */
+    detectPathTraversal(input) {
+        if (typeof input !== 'string') return false;
+
+        const patterns = [
+            /\.\./,
+            /%2e%2e/i,
+            /\.\.%2f/i,
+            /%2e%2e%2f/i
+        ];
+
+        return patterns.some(pattern => pattern.test(input));
+    }
+
+    /**
+     * Advanced request validation middleware
+     */
+    getRequestValidator() {
+        return async (req, res, next) => {
+            const ids = require('./intrusion-detection');
+            const ip = req.ip || req.connection.remoteAddress;
+
+            // Check request size
+            const payloadValidation = this.validateRequestPayload(req.body, 5 * 1024 * 1024);
+            if (!payloadValidation.valid) {
+                await ids.recordSuspiciousActivity(ip, 'LARGE_PAYLOAD', {
+                    path: req.path,
+                    size: JSON.stringify(req.body).length
+                });
+                return res.status(413).json({ error: payloadValidation.error });
+            }
+
+            // Check for SQL injection
+            const allParams = JSON.stringify({ ...req.body, ...req.query, ...req.params });
+            if (this.detectSQLInjection(allParams)) {
+                await ids.recordSuspiciousActivity(ip, 'SQL_INJECTION_ATTEMPT', {
+                    path: req.path,
+                    method: req.method
+                });
+                await this.logSecurityEvent('SQL_INJECTION_ATTEMPT', {
+                    ip,
+                    path: req.path,
+                    method: req.method
+                });
+                return res.status(400).json({ error: 'Invalid request' });
+            }
+
+            // Check for XSS
+            if (this.detectXSS(allParams)) {
+                await ids.recordSuspiciousActivity(ip, 'XSS_ATTEMPT', {
+                    path: req.path,
+                    method: req.method
+                });
+                await this.logSecurityEvent('XSS_ATTEMPT', {
+                    ip,
+                    path: req.path,
+                    method: req.method
+                });
+                return res.status(400).json({ error: 'Invalid request' });
+            }
+
+            // Check for path traversal
+            if (this.detectPathTraversal(allParams)) {
+                await ids.recordSuspiciousActivity(ip, 'PATH_TRAVERSAL', {
+                    path: req.path,
+                    method: req.method
+                });
+                await this.logSecurityEvent('PATH_TRAVERSAL', {
+                    ip,
+                    path: req.path,
+                    method: req.method
+                });
+                return res.status(400).json({ error: 'Invalid request' });
+            }
+
+            next();
+        };
+    }
+
+    /**
      * Validate password strength
      */
     validatePassword(password) {

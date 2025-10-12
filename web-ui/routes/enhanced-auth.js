@@ -53,13 +53,28 @@ router.post('/setup', authRateLimiter, async (req, res) => {
 router.post('/login', authRateLimiter, async (req, res) => {
     try {
         const { username, password, mfaToken } = req.body;
+        const ip = req.ip || req.connection.remoteAddress;
+        const ids = require('../intrusion-detection');
+
+        // Check if IP is blocked
+        if (await ids.isBlocked(ip)) {
+            await security.logAuth('LOGIN_BLOCKED', null, username, false, { 
+                reason: 'ip_blocked', 
+                ip 
+            });
+            return res.status(403).json({ 
+                error: 'Access denied',
+                message: 'Your IP has been temporarily blocked due to suspicious activity'
+            });
+        }
 
         // Validate inputs
         const usernameValidation = security.validateUsername(username);
         if (!usernameValidation.valid) {
+            await ids.recordFailedLogin(ip, username);
             await security.logAuth('LOGIN_FAILED', null, username, false, { 
                 reason: 'invalid_username', 
-                ip: req.ip 
+                ip 
             });
             return res.status(400).json({ error: usernameValidation.error });
         }
@@ -68,11 +83,27 @@ router.post('/login', authRateLimiter, async (req, res) => {
         const result = await auth.authenticate(usernameValidation.username, password);
 
         if (!result) {
+            // Record failed login
+            const lockoutInfo = await ids.recordFailedLogin(ip, username);
+            
             await security.logAuth('LOGIN_FAILED', null, username, false, { 
                 reason: 'invalid_credentials', 
-                ip: req.ip 
+                ip,
+                attempts: lockoutInfo.attempts
             });
-            return res.status(401).json({ error: 'Invalid credentials' });
+
+            if (lockoutInfo.blocked) {
+                return res.status(429).json({ 
+                    error: 'Account temporarily locked',
+                    message: `Too many failed attempts. Account locked until ${lockoutInfo.until.toLocaleTimeString()}`,
+                    blockedUntil: lockoutInfo.until
+                });
+            }
+
+            return res.status(401).json({ 
+                error: 'Invalid credentials',
+                attemptsRemaining: lockoutInfo.remaining
+            });
         }
 
         // Check if MFA is enabled
@@ -82,7 +113,7 @@ router.post('/login', authRateLimiter, async (req, res) => {
             if (!mfaToken) {
                 // MFA required but not provided
                 await security.logAuth('LOGIN_MFA_REQUIRED', result.user.id, result.user.username, false, { 
-                    ip: req.ip 
+                    ip 
                 });
                 return res.json({ 
                     mfaRequired: true,
@@ -95,15 +126,23 @@ router.post('/login', authRateLimiter, async (req, res) => {
                              await mfa.verifyBackupCode(result.user.id, mfaToken);
 
             if (!mfaValid) {
+                // Record failed MFA attempt
+                await ids.recordSuspiciousActivity(ip, 'FAILED_MFA', {
+                    username: result.user.username
+                });
+                
                 await security.logAuth('LOGIN_MFA_FAILED', result.user.id, result.user.username, false, { 
-                    ip: req.ip 
+                    ip 
                 });
                 return res.status(401).json({ error: 'Invalid MFA token' });
             }
         }
 
+        // Successful login - clear failed attempts
+        await ids.recordSuccessfulLogin(ip);
+
         await security.logAuth('LOGIN_SUCCESS', result.user.id, result.user.username, true, { 
-            ip: req.ip,
+            ip,
             mfaUsed: mfaEnabled
         });
 
