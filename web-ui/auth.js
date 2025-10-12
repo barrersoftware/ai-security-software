@@ -259,6 +259,110 @@ async function updatePassword(userId, newPassword) {
     await saveUsers(data);
 }
 
+// Get user by ID
+async function getUserById(userId) {
+    const data = await loadUsers();
+    const user = data.users.find(u => u.id === userId);
+    
+    if (!user) return null;
+    
+    return {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        oauth_provider: user.oauth_provider
+    };
+}
+
+// Get user by email
+async function getUserByEmail(email) {
+    const data = await loadUsers();
+    const user = data.users.find(u => u.email === email);
+    
+    if (!user) return null;
+    
+    return {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        oauth_provider: user.oauth_provider
+    };
+}
+
+// Create user (for OAuth)
+async function createUser(userData) {
+    const data = await loadUsers();
+    
+    // Check if user already exists
+    const existing = data.users.find(u => u.username === userData.username || u.email === userData.email);
+    if (existing) {
+        throw new Error('User already exists');
+    }
+    
+    const user = {
+        id: crypto.randomUUID(),
+        username: userData.username,
+        email: userData.email,
+        name: userData.name || userData.username,
+        role: userData.role || 'viewer',
+        oauth_provider: userData.oauth_provider,
+        oauth_id: userData.oauth_id,
+        createdAt: new Date().toISOString(),
+        lastLogin: new Date().toISOString()
+    };
+    
+    data.users.push(user);
+    await saveUsers(data);
+    
+    return {
+        user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            role: user.role
+        }
+    };
+}
+
+// Link OAuth to existing account
+async function linkOAuth(userId, provider, oauthId) {
+    const data = await loadUsers();
+    const user = data.users.find(u => u.id === userId);
+    
+    if (!user) {
+        throw new Error('User not found');
+    }
+    
+    user.oauth_provider = provider;
+    user.oauth_id = oauthId;
+    
+    await saveUsers(data);
+}
+
+// Generate token for user (used by OAuth)
+async function generateTokenForUser(userId) {
+    const user = await getUserById(userId);
+    if (!user) {
+        throw new Error('User not found');
+    }
+    
+    const token = generateToken();
+    const sessions = await loadSessions();
+    
+    sessions.sessions[token] = {
+        userId: user.id,
+        username: user.username,
+        role: user.role,
+        createdAt: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + SESSION_TIMEOUT).toISOString()
+    };
+    
+    await saveSessions(sessions);
+    return token;
+}
+
 // Clean up expired sessions (run periodically)
 async function cleanupSessions() {
     const sessions = await loadSessions();
@@ -314,5 +418,10 @@ module.exports = {
     updatePassword,
     cleanupSessions,
     requireAuth,
-    requireAdmin
+    requireAdmin,
+    getUserById,
+    getUserByEmail,
+    createUser,
+    linkOAuth,
+    generateToken: generateTokenForUser
 };

@@ -1,27 +1,58 @@
 #!/usr/bin/env node
+require('dotenv').config();
 const express = require('express');
 const http = require('http');
+const https = require('https');
 const WebSocket = require('ws');
 const path = require('path');
 const fs = require('fs').promises;
 const { spawn } = require('child_process');
 const chokidar = require('chokidar');
 const os = require('os');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 
 const app = express();
-const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
 
 const PORT = process.env.PORT || 3000;
 const REPORTS_DIR = path.join(os.homedir(), 'security-reports');
 const SCRIPTS_DIR = path.join(__dirname, '..', 'scripts');
 
-// Middleware
-app.use(express.json());
+// Initialize security manager
+const security = require('./security');
+security.init().catch(console.error);
+
+// Apply security headers
+app.use(security.getHelmet());
+
+// Basic middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cookieParser());
+
+// Session middleware
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'change-this-in-production',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+}));
+
+// Static files
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Initialize OAuth
+const oauth = require('./oauth');
+oauth.init(app);
 
 // API Routes
 const authRoutes = require('./routes/auth');
+const enhancedAuthRoutes = require('./routes/enhanced-auth');
+const adminRoutes = require('./routes/admin');
 const scannerRoutes = require('./routes/scanner');
 const reportsRoutes = require('./routes/reports');
 const chatRoutes = require('./routes/chat');
@@ -30,16 +61,42 @@ const advancedRoutes = require('./routes/advanced-scanner');
 const complianceRoutes = require('./routes/compliance');
 const auth = require('./auth');
 
+// Apply rate limiting to API routes
+const apiRateLimiter = security.getApiRateLimiter();
+
 // Public routes (no auth required)
 app.use('/api/auth', authRoutes);
+app.use('/api/auth', enhancedAuthRoutes);
 
-// Protected routes (auth required)
-app.use('/api/scanner', auth.requireAuth, scannerRoutes);
-app.use('/api/reports', auth.requireAuth, reportsRoutes);
-app.use('/api/chat', auth.requireAuth, chatRoutes);
-app.use('/api/system', auth.requireAuth, systemRoutes);
-app.use('/api/advanced', auth.requireAuth, advancedRoutes);
-app.use('/api/compliance', auth.requireAuth, complianceRoutes);
+// Setup OAuth routes
+oauth.setupRoutes(app);
+
+// Protected routes (auth required) with rate limiting
+app.use('/api/scanner', apiRateLimiter, auth.requireAuth, scannerRoutes);
+app.use('/api/reports', apiRateLimiter, auth.requireAuth, reportsRoutes);
+app.use('/api/chat', apiRateLimiter, auth.requireAuth, chatRoutes);
+app.use('/api/system', apiRateLimiter, auth.requireAuth, systemRoutes);
+app.use('/api/advanced', apiRateLimiter, auth.requireAuth, advancedRoutes);
+app.use('/api/compliance', security.getScanRateLimiter(), auth.requireAuth, complianceRoutes);
+app.use('/api/admin', apiRateLimiter, auth.requireAuth, adminRoutes);
+
+// Create server (HTTP or HTTPS based on config)
+let server;
+if (process.env.SSL_CERT_PATH && process.env.SSL_KEY_PATH) {
+    // Use HTTPS if SSL certificates are provided
+    const fsSync = require('fs');
+    const httpsOptions = {
+        key: fsSync.readFileSync(process.env.SSL_KEY_PATH),
+        cert: fsSync.readFileSync(process.env.SSL_CERT_PATH)
+    };
+    server = https.createServer(httpsOptions, app);
+    console.log('🔒 HTTPS enabled');
+} else {
+    server = http.createServer(app);
+    console.log('⚠️  Running in HTTP mode - configure SSL for production');
+}
+
+const wss = new WebSocket.Server({ server });
 
 // WebSocket connections for real-time updates
 const clients = new Set();
@@ -122,10 +179,13 @@ app.use((err, req, res, next) => {
 
 // Start server
 server.listen(PORT, () => {
-  console.log(`🛡️  AI Security Scanner Web UI`);
-  console.log(`📡 Server running on http://localhost:${PORT}`);
+  console.log(`🛡️  AI Security Scanner Web UI v3.1.0`);
+  console.log(`📡 Server running on ${process.env.SSL_CERT_PATH ? 'https' : 'http'}://localhost:${PORT}`);
   console.log(`🔍 Reports directory: ${REPORTS_DIR}`);
   console.log(`📜 Scripts directory: ${SCRIPTS_DIR}`);
+  console.log(`🔒 Security features: MFA, OAuth, Rate Limiting, Audit Logging`);
+  console.log(`📊 Backup & Restore: Enabled`);
+  
   setupReportWatcher();
   
   // Clean up expired sessions every hour
@@ -134,6 +194,24 @@ server.listen(PORT, () => {
       console.error('Error cleaning sessions:', err)
     );
   }, 60 * 60 * 1000);
+  
+  // Log server start
+  security.logApp('info', 'Server started', {
+    port: PORT,
+    nodeVersion: process.version,
+    platform: process.platform
+  }).catch(console.error);
+  
+  // Auto backup if enabled
+  if (process.env.AUTO_BACKUP_ENABLED === 'true') {
+    const backup = require('./backup');
+    console.log('📦 Auto-backup enabled');
+    
+    // Create initial backup on startup
+    backup.createBackup()
+      .then(file => console.log(`✅ Initial backup created: ${path.basename(file)}`))
+      .catch(err => console.error('Backup error:', err));
+  }
 });
 
 // Graceful shutdown
