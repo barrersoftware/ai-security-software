@@ -295,9 +295,30 @@ This tool is for security analysis and educational purposes. It complements but 
 - **Discussions:** [GitHub Discussions](https://github.com/ssfdre38/ai-security-scanner/discussions)
 - **Security Issues:** security@yourdomain.com (private disclosure)
 
+## 🌐 Web UI Dashboard
+
+**NEW!** Modern web-based dashboard for managing scans and viewing reports.
+
+```bash
+cd web-ui
+./start-web-ui.sh
+```
+
+Access at `http://localhost:3000`
+
+**Features:**
+- 📊 Real-time dashboard with live updates
+- 🔍 Start and monitor scans from browser
+- 📄 Browse and view security reports
+- 💬 Interactive AI security assistant
+- ⚙️ System monitoring and status
+- 📱 Responsive design for mobile/tablet
+
+See [web-ui/README.md](web-ui/README.md) for full documentation.
+
 ## 🗺️ Roadmap
 
-- [ ] Web UI dashboard
+- [x] ✅ Web UI dashboard
 - [ ] Multi-server scanning from central location
 - [ ] Integration with Slack/Discord/Teams
 - [ ] Custom rule engine

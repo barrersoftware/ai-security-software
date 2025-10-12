@@ -1,0 +1,21 @@
+{
+  "name": "ai-security-scanner-web-ui",
+  "version": "1.0.0",
+  "description": "Web dashboard for AI Security Scanner",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "NODE_ENV=development node server.js",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": ["security", "ai", "scanner", "dashboard"],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "chokidar": "^4.0.3",
+    "express": "^5.1.0",
+    "marked": "^16.4.0",
+    "ws": "^8.18.3"
+  }
+}

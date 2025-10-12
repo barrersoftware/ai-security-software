@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Security Scanner Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="header-content">
+                <h1>🛡️ AI Security Scanner</h1>
+                <div class="header-status">
+                    <div class="status-indicator" id="connectionStatus">
+                        <span class="dot"></span>
+                        <span class="text">Connecting...</span>
+                    </div>
+                    <div class="system-info" id="systemInfo">
+                        <span id="hostname">-</span> | 
+                        <span id="uptime">-</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tabs">
+            <button class="tab-button active" data-tab="dashboard">📊 Dashboard</button>
+            <button class="tab-button" data-tab="scanner">🔍 Scanner</button>
+            <button class="tab-button" data-tab="reports">📄 Reports</button>
+            <button class="tab-button" data-tab="chat">💬 AI Assistant</button>
+            <button class="tab-button" data-tab="system">⚙️ System</button>
+        </nav>
+
+        <!-- Dashboard Tab -->
+        <div class="tab-content active" id="dashboard">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h2>📊 Overview</h2>
+                    <div class="stats-grid">
+                        <div class="stat">
+                            <div class="stat-value" id="totalReports">-</div>
+                            <div class="stat-label">Total Reports</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="activeScans">-</div>
+                            <div class="stat-label">Active Scans</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="cpuCount">-</div>
+                            <div class="stat-label">CPU Cores</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="memoryUsage">-</div>
+                            <div class="stat-label">Memory Usage</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>🔒 Security Status</h2>
+                    <div id="securityStatus" class="security-status">
+                        <div class="security-item">
+                            <span class="label">Firewall:</span>
+                            <span class="value" id="firewallStatus">Checking...</span>
+                        </div>
+                        <div class="security-item">
+                            <span class="label">Fail2Ban:</span>
+                            <span class="value" id="fail2banStatus">Checking...</span>
+                        </div>
+                        <div class="security-item">
+                            <span class="label">Ollama Service:</span>
+                            <span class="value" id="ollamaStatus">Checking...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card full-width">
+                    <h2>📈 Recent Activity</h2>
+                    <div id="activityLog" class="activity-log">
+                        <div class="activity-item">System started</div>
+                    </div>
+                </div>
+
+                <div class="card full-width">
+                    <h2>📋 Latest Report</h2>
+                    <div id="latestReport" class="latest-report">
+                        <p class="empty">No reports yet. Start a scan to generate your first report.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scanner Tab -->
+        <div class="tab-content" id="scanner">
+            <div class="scanner-grid">
+                <div class="card">
+                    <h2>🔍 Start New Scan</h2>
+                    <div class="scan-buttons">
+                        <button class="btn btn-primary" id="startComprehensiveScan">
+                            <span class="btn-icon">🔍</span>
+                            <span class="btn-text">
+                                <strong>Comprehensive Scan</strong>
+                                <small>Full system security audit</small>
+                            </span>
+                        </button>
+                        <button class="btn btn-secondary" id="startCodeReview">
+                            <span class="btn-icon">📝</span>
+                            <span class="btn-text">
+                                <strong>Code Review</strong>
+                                <small>Analyze code for vulnerabilities</small>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card full-width">
+                    <h2>🔄 Active Scans</h2>
+                    <div id="activeScansList" class="scans-list">
+                        <p class="empty">No active scans</p>
+                    </div>
+                </div>
+
+                <div class="card full-width">
+                    <h2>📺 Scan Output</h2>
+                    <div id="scanOutput" class="scan-output">
+                        <p class="empty">Start a scan to see output here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Tab -->
+        <div class="tab-content" id="reports">
+            <div class="card">
+                <div class="card-header">
+                    <h2>📄 Security Reports</h2>
+                    <button class="btn btn-sm" id="refreshReports">🔄 Refresh</button>
+                </div>
+                <div id="reportsList" class="reports-list">
+                    <p class="empty">Loading reports...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Tab -->
+        <div class="tab-content" id="chat">
+            <div class="card chat-card">
+                <h2>💬 AI Security Assistant</h2>
+                <div id="chatMessages" class="chat-messages">
+                    <div class="chat-message assistant">
+                        <div class="message-content">
+                            Hello! I'm your AI security assistant. Ask me anything about cybersecurity, best practices, or threat analysis.
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-container">
+                    <textarea id="chatInput" placeholder="Ask a security question..." rows="3"></textarea>
+                    <button id="sendMessage" class="btn btn-primary">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Tab -->
+        <div class="tab-content" id="system">
+            <div class="system-grid">
+                <div class="card">
+                    <h2>💻 System Information</h2>
+                    <div id="systemDetails" class="system-details">
+                        <div class="detail-item">
+                            <span class="label">Hostname:</span>
+                            <span class="value" id="sysHostname">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Platform:</span>
+                            <span class="value" id="sysPlatform">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Architecture:</span>
+                            <span class="value" id="sysArch">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">CPUs:</span>
+                            <span class="value" id="sysCpus">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Total Memory:</span>
+                            <span class="value" id="sysTotalMem">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Free Memory:</span>
+                            <span class="value" id="sysFreeMem">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Uptime:</span>
+                            <span class="value" id="sysUptime">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>💾 Disk Usage</h2>
+                    <div id="diskInfo" class="disk-info">
+                        <p>Loading...</p>
+                    </div>
+                </div>
+
+                <div class="card full-width">
+                    <h2>🤖 AI Models</h2>
+                    <div id="aiModels" class="ai-models">
+                        <p>Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Code Review Modal -->
+    <div id="codeReviewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📝 Code Review</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label for="codePathInput">Enter path to code directory or file:</label>
+                <input type="text" id="codePathInput" placeholder="/path/to/code" class="input-field">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelCodeReview">Cancel</button>
+                <button class="btn btn-primary" id="confirmCodeReview">Start Review</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Viewer Modal -->
+    <div id="reportViewerModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2 id="reportTitle">Report</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="reportContent" class="report-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
