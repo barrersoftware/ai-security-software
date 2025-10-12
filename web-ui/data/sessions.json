@@ -1,0 +1,11 @@
+{
+  "sessions": {
+    "c3556ea1eb54940663f59066d16ee01ab7314d2499c3b2153a4ff96e636cf83b": {
+      "userId": "2176ed25-c647-42d3-82c6-4d9d18ee3d0b",
+      "username": "admin",
+      "role": "admin",
+      "createdAt": "2025-10-12T21:54:16.071Z",
+      "expiresAt": "2025-10-13T21:54:16.071Z"
+    }
+  }
+}

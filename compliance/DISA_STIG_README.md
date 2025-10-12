@@ -1,0 +1,1 @@
+../docs/compliance/DISA_STIG_README.md

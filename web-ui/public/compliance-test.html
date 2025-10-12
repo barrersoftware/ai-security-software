@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compliance Testing - AI Security Scanner</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .scanner-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #667eea;
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .activity-log {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-left: 3px solid #4CAF50;
+            padding-left: 10px;
+        }
+
+        .activity-item.error {
+            border-left-color: #f44336;
+        }
+
+        .activity-item.success {
+            border-left-color: #4CAF50;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status-ok {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-warning {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .status-error {
+            background: #ffebee;
+            color: #c62828;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Back to Dashboard</a>
+        
+        <h1>🛡️ Compliance Testing Dashboard</h1>
+        <p style="color: #666; margin-bottom: 30px;">Test all compliance scanners from one interface</p>
+
+        <div class="scanner-grid">
+            <!-- Standard Compliance -->
+            <div class="card">
+                <h2>📋 Standard Compliance</h2>
+                <p style="font-size: 13px; color: #666;">PCI-DSS, HIPAA, SOC2, GDPR</p>
+                <form id="complianceForm">
+                    <div class="form-group">
+                        <label>Framework:</label>
+                        <select id="complianceFramework">
+                            <option value="pci-dss">PCI-DSS</option>
+                            <option value="hipaa">HIPAA</option>
+                            <option value="soc2">SOC 2</option>
+                            <option value="gdpr">GDPR</option>
+                            <option value="all">All Frameworks</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="complianceNotify">
+                            Send notifications
+                        </label>
+                    </div>
+                    <button type="submit" class="btn">Run Compliance Scan</button>
+                </form>
+            </div>
+
+            <!-- NIST Scanner -->
+            <div class="card">
+                <h2>🏛️ NIST Compliance</h2>
+                <p style="font-size: 13px; color: #666;">CSF, 800-53, 800-171</p>
+                <form id="nistForm">
+                    <div class="form-group">
+                        <label>Framework:</label>
+                        <select id="nistFramework">
+                            <option value="csf">NIST CSF 2.0</option>
+                            <option value="800-53">NIST 800-53 (Federal)</option>
+                            <option value="800-171">NIST 800-171 (CUI)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="nistNotify">
+                            Send notifications
+                        </label>
+                    </div>
+                    <button type="submit" class="btn">Run NIST Scan</button>
+                </form>
+            </div>
+
+            <!-- ISO 27001 -->
+            <div class="card">
+                <h2>🌍 ISO 27001:2022</h2>
+                <p style="font-size: 13px; color: #666;">International ISMS Standard</p>
+                <form id="isoForm">
+                    <div class="form-group" style="padding: 20px 0;">
+                        <p style="font-size: 13px; color: #666; margin: 0;">
+                            Assesses technical controls from Annex A
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="isoNotify">
+                            Send notifications
+                        </label>
+                    </div>
+                    <button type="submit" class="btn">Run ISO 27001 Scan</button>
+                </form>
+            </div>
+
+            <!-- OpenSCAP -->
+            <div class="card">
+                <h2>🔒 OpenSCAP</h2>
+                <p style="font-size: 13px; color: #666;">200+ Security Checks</p>
+                <div style="margin-bottom: 10px; font-size: 12px;">
+                    Status: <span id="openscapStatus">Checking...</span>
+                </div>
+                <form id="openscapForm">
+                    <div class="form-group">
+                        <label>Security Profile:</label>
+                        <select id="openscapProfile">
+                            <option value="standard">Standard Security</option>
+                            <option value="cis">CIS Benchmark</option>
+                            <option value="pci-dss">PCI-DSS</option>
+                            <option value="hipaa">HIPAA</option>
+                            <option value="stig">DISA STIG</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="openscapAnalyze">
+                            AI Analysis
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="openscapNotify">
+                            Send notifications
+                        </label>
+                    </div>
+                    <button type="submit" class="btn">Run OpenSCAP Scan</button>
+                </form>
+            </div>
+
+            <!-- DISA STIG -->
+            <div class="card">
+                <h2>🎖️ DISA STIG</h2>
+                <p style="font-size: 13px; color: #666;">DoD Security Requirements</p>
+                <form id="disaStigForm">
+                    <div class="form-group">
+                        <label>Category:</label>
+                        <select id="stigCategory">
+                            <option value="">All Categories</option>
+                            <option value="CAT1">CAT I (Critical)</option>
+                            <option value="CAT2">CAT II (Medium)</option>
+                            <option value="CAT3">CAT III (Low)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="stigAnalyze">
+                            AI Analysis
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="stigNotify">
+                            Send notifications
+                        </label>
+                    </div>
+                    <button type="submit" class="btn">Run DISA STIG Scan</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="card">
+            <h2>📊 Activity Log</h2>
+            <div id="activityLog" class="activity-log">
+                <div class="activity-item">System ready - Waiting for scans...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/compliance.js"></script>
+</body>
+</html>

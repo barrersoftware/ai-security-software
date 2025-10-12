@@ -139,7 +139,7 @@ get_server_info() {
         fi
         
         if $in_server; then
-            if [[ "$line" =~ ^[[:space:]]*- name: ]]; then
+            if [[ "$line" =~ ^[[:space:]]*-[[:space:]]name: ]]; then
                 break
             fi
             

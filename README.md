@@ -520,18 +520,63 @@ See [database-security/README.md](database-security/README.md) for full document
 
 ## 📋 Compliance Frameworks
 
-**NEW!** PCI-DSS, HIPAA, SOC2, GDPR compliance scanning.
+**NEW!** Industry standards, government regulations, and defense-level security auditing.
 
 ```bash
 cd compliance
+
+# Industry compliance standards
 ./scan-compliance.sh --framework pci-dss
+
+# OpenSCAP security scanning (200+ checks)
+sudo ./scan-openscap.sh --profile standard
+
+# DISA STIG (DoD/Government compliance)
+sudo ./scan-disa-stig.sh
 ```
 
-**Frameworks:**
+**Industry Frameworks:**
 - PCI-DSS 3.2.1 (Payment Card Industry)
 - HIPAA Security Rule (Healthcare)
 - SOC 2 Type II (Service organizations)
 - GDPR (Data protection)
+
+**Government & Defense Standards:**
+- **OpenSCAP** - Security Content Automation Protocol scanning
+- **DISA STIG** - Defense Information Systems Agency Security Technical Implementation Guides
+- **CIS Benchmarks** - Center for Internet Security hardening guidelines
+- **OSPP** - Common Criteria Operating System Protection Profile
+- **CUI** - Controlled Unclassified Information protection
+
+**Key Features:**
+- 🛡️ 200-300+ automated security checks per profile
+- 🎯 CAT I/II/III severity classification (DISA STIG)
+- 🤖 AI-powered risk analysis and remediation recommendations
+- 📊 Multiple report formats (HTML, XML, Markdown)
+- ⚡ Optional automated remediation (use with caution!)
+- 🔔 Integration with team notifications
+
+**Installation:**
+```bash
+# Install OpenSCAP tools (required for SCAP/STIG)
+cd scripts
+sudo ./install-openscap.sh
+
+# Verify installation
+oscap --version
+```
+
+**Examples:**
+```bash
+# Run CIS Benchmark with AI analysis
+sudo ./scan-openscap.sh --profile cis --analyze
+
+# Scan only critical (CAT I) STIG requirements
+sudo ./scan-disa-stig.sh --category CAT1 --notify
+
+# Auto-remediate based on SCAP profile (DANGEROUS - test first!)
+sudo ./scan-openscap.sh --profile standard --fix
+```
 
 See [compliance/README.md](compliance/README.md) for full documentation.
 
@@ -546,8 +591,12 @@ See [compliance/README.md](compliance/README.md) for full documentation.
 - [x] ✅ Database security analysis
 - [x] ✅ Compliance framework templates (PCI-DSS, HIPAA, SOC2, GDPR)
 - [x] ✅ Malware, virus, and rootkit detection (Linux & Windows)
+- [x] ✅ **OpenSCAP integration** - SCAP security compliance scanning
+- [x] ✅ **DISA STIG support** - DoD/Government security auditing
 
-**🎉 100% Complete!** All roadmap features implemented plus malware detection!
+**🎉 100% Complete + Government/DoD Security Standards!**
+
+All major roadmap features implemented including enterprise compliance and government-level security auditing with OpenSCAP and DISA STIG support!
 
 ---
 

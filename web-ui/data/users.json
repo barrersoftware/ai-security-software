@@ -1,0 +1,14 @@
+{
+  "users": [
+    {
+      "id": "2176ed25-c647-42d3-82c6-4d9d18ee3d0b",
+      "username": "admin",
+      "email": "admin@localhost",
+      "role": "admin",
+      "hash": "bd4960590eedbcea86f04ddc9d9b99d845d7ee39f5885809b027c2a86ea173d8a080333b6e754a3cb837629a5f18c456efbecd3cbd817c7a148f5029feecf5a2",
+      "salt": "1506e52c7cf071ab571d39c6b5a36d42",
+      "createdAt": "2025-10-12T21:54:15.980Z",
+      "lastLogin": "2025-10-12T21:54:16.043Z"
+    }
+  ]
+}

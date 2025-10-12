@@ -21,17 +21,25 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // API Routes
+const authRoutes = require('./routes/auth');
 const scannerRoutes = require('./routes/scanner');
 const reportsRoutes = require('./routes/reports');
 const chatRoutes = require('./routes/chat');
 const systemRoutes = require('./routes/system');
 const advancedRoutes = require('./routes/advanced-scanner');
+const complianceRoutes = require('./routes/compliance');
+const auth = require('./auth');
 
-app.use('/api/scanner', scannerRoutes);
-app.use('/api/reports', reportsRoutes);
-app.use('/api/chat', chatRoutes);
-app.use('/api/system', systemRoutes);
-app.use('/api/advanced', advancedRoutes);
+// Public routes (no auth required)
+app.use('/api/auth', authRoutes);
+
+// Protected routes (auth required)
+app.use('/api/scanner', auth.requireAuth, scannerRoutes);
+app.use('/api/reports', auth.requireAuth, reportsRoutes);
+app.use('/api/chat', auth.requireAuth, chatRoutes);
+app.use('/api/system', auth.requireAuth, systemRoutes);
+app.use('/api/advanced', auth.requireAuth, advancedRoutes);
+app.use('/api/compliance', auth.requireAuth, complianceRoutes);
 
 // WebSocket connections for real-time updates
 const clients = new Set();
@@ -119,6 +127,13 @@ server.listen(PORT, () => {
   console.log(`🔍 Reports directory: ${REPORTS_DIR}`);
   console.log(`📜 Scripts directory: ${SCRIPTS_DIR}`);
   setupReportWatcher();
+  
+  // Clean up expired sessions every hour
+  setInterval(() => {
+    auth.cleanupSessions().catch(err => 
+      console.error('Error cleaning sessions:', err)
+    );
+  }, 60 * 60 * 1000);
 });
 
 // Graceful shutdown

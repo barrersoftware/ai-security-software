@@ -1,0 +1,1 @@
+../docs/compliance/OPENSCAP_README.md
