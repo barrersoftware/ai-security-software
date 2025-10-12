@@ -12,6 +12,8 @@ Comprehensive security analysis tools using local Large Language Models (LLMs) f
 
 **🎉 NEW in v3.1.1: Perfect 100/100 Security Score Achieved!** - See [Release Notes](RELEASE_NOTES_v3.1.0.md)
 
+📍 **[View Roadmap](ROADMAP.md)** | 💡 **[Request Features](https://github.com/ssfdre38/ai-security-scanner/discussions/new?category=ideas)** | ⭐ **[Star on GitHub](https://github.com/ssfdre38/ai-security-scanner)**
+
 ## 🌟 Features
 
 ### Core Security Features
@@ -341,6 +343,7 @@ Contributions welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
 - [API Reference](docs/API.md)
 - [Security Best Practices](docs/SECURITY.md)
+- [**Product Roadmap**](ROADMAP.md) - Future plans and feature requests
 
 ## 🐛 Troubleshooting
 
