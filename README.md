@@ -3,13 +3,18 @@
 **Enterprise-grade security analysis powered by local AI - completely private, no data ever leaves your server.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Platform: Linux](https://img.shields.io/badge/Platform-Linux%20%7C%20BSD%20%7C%20macOS-blue.svg)](https://www.kernel.org/)
+[![Version](https://img.shields.io/badge/Version-3.1.1-blue.svg)](https://github.com/ssfdre38/ai-security-scanner/releases/tag/v3.1.1)
+[![Security Score](https://img.shields.io/badge/Security%20Score-100%2F100-brightgreen.svg)](SECURITY_SCORE_100.md)
+[![Platform: Linux](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg)](https://www.kernel.org/)
 [![AI Model: Llama 3.1](https://img.shields.io/badge/AI-Llama%203.1-green.svg)](https://ollama.com/)
 
 Comprehensive security analysis tools using local Large Language Models (LLMs) for analyzing system configurations, detecting vulnerabilities, reviewing code, and monitoring threats in real-time. Perfect for security professionals, DevOps engineers, and system administrators who need enterprise-grade security without compromising privacy.
 
+**🎉 NEW in v3.1.1: Perfect 100/100 Security Score Achieved!** - See [Release Notes](RELEASE_NOTES_v3.1.0.md)
+
 ## 🌟 Features
 
+### Core Security Features
 - **🔍 Comprehensive Security Scanning** - Full system audits with AI-powered analysis
 - **🛡️ Real-time Threat Monitoring** - Live log analysis with instant threat assessment
 - **🦠 Malware & Rootkit Detection** - ClamAV, rkhunter, chkrootkit with AI analysis
@@ -18,6 +23,22 @@ Comprehensive security analysis tools using local Large Language Models (LLMs) f
 - **🔒 100% Private** - Runs entirely on your infrastructure, zero external calls
 - **⚡ Automated Scheduling** - Set up daily/hourly scans via cron
 - **📊 Detailed Reports** - Actionable recommendations with priority levels
+
+### 🆕 Advanced Security Features (v3.1.0+)
+- **🔐 Multi-Factor Authentication (MFA/2FA)** - TOTP-based 2FA with QR code setup
+- **🌐 OAuth 2.0 Integration** - Sign in with Google/Microsoft
+- **🚨 Intrusion Detection System** - Real-time threat detection with automated blocking
+- **🔒 Account Lockout Protection** - Automatic lockout after failed login attempts
+- **📊 IP Whitelist/Blacklist** - Manage allowed and blocked IPs
+- **⏱️ Advanced Rate Limiting** - 3-tier rate limiting (general, auth, admin)
+- **🔄 Secrets Rotation** - Automated secret rotation scheduler
+- **✅ Configuration Validator** - Startup validation for security configs
+- **📝 Audit Logging** - Comprehensive logging with 90-day retention
+- **💾 Automated Backups** - Scheduled backups with disaster recovery
+- **🔐 SSL/TLS Support** - HTTPS for production environments
+- **🛡️ Enhanced Security Headers** - Helmet.js security middleware
+
+**Security Score: 100/100** ✨ - See [detailed breakdown](SECURITY_SCORE_100.md)
 
 ## 🎯 What It Scans
 
@@ -61,6 +82,33 @@ cd windows
 
 ## 🚀 Quick Start
 
+### One-Command Installation ⚡
+
+**Linux/macOS:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/ssfdre38/ai-security-scanner/master/setup.sh | bash
+```
+
+**Windows (PowerShell as Admin):**
+```powershell
+irm https://raw.githubusercontent.com/ssfdre38/ai-security-scanner/master/setup.ps1 | iex
+```
+
+The setup script automatically:
+- ✅ Detects your OS and installs dependencies
+- ✅ Installs Node.js, Ollama, and security tools
+- ✅ Generates secure random secrets
+- ✅ Configures SSL/TLS certificates
+- ✅ Sets up firewall rules
+- ✅ Creates systemd/Windows service
+- ✅ Tests the installation
+
+**That's it!** Access at `https://localhost:3000` after installation.
+
+See [SETUP_GUIDE.md](SETUP_GUIDE.md) for advanced configuration options.
+
+### Manual Installation (Alternative)
+
 ### Prerequisites
 
 - Linux, BSD, macOS, or Windows system
@@ -68,7 +116,7 @@ cd windows
 - 50GB+ free disk space
 - Internet connection (for initial setup only)
 
-### Installation
+### Installation Steps
 
 ```bash
 # Clone the repository
@@ -598,8 +646,57 @@ See [compliance/README.md](compliance/README.md) for full documentation.
 
 All major roadmap features implemented including enterprise compliance and government-level security auditing with OpenSCAP and DISA STIG support!
 
+## 📚 Documentation
+
+- **[Installation Guide](INSTALL.md)** - Quick installation instructions
+- **[Setup Guide](SETUP_GUIDE.md)** - Comprehensive setup for all platforms
+- **[Security Features](QUICK_START_SECURITY_FEATURES.md)** - Guide to MFA, OAuth, and more
+- **[Security Score 100/100](SECURITY_SCORE_100.md)** - Detailed security breakdown
+- **[Release Notes v3.1.0](RELEASE_NOTES_v3.1.0.md)** - What's new in latest release
+- **[Mobile App Feasibility](MOBILE_APP_FEASIBILITY.md)** - Future mobile app development
+- **[Compliance](compliance/README.md)** - Compliance frameworks and STIG
+- **[Multi-Server](multi-server/README.md)** - Manage multiple servers
+- **[Cloud Security](cloud-security/README.md)** - AWS, GCP, Azure scanning
+- **[Windows Support](windows/README.md)** - Windows-specific documentation
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+**Ways to contribute:**
+- 🐛 Report bugs
+- 💡 Suggest features
+- 📝 Improve documentation
+- 🔧 Submit pull requests
+- ⭐ Star the repository
+- 🗣️ Spread the word!
+
+## 🛡️ Security
+
+Found a security vulnerability? Please see [SECURITY.md](SECURITY.md) for responsible disclosure.
+
+**Security Score: 100/100** - See [detailed analysis](SECURITY_SCORE_100.md)
+
+## 📜 Code of Conduct
+
+Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before contributing.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🌟 Mission
+
+**Making enterprise-grade cybersecurity accessible to everyone.**
+
+We believe that security should not be a luxury reserved for corporations with deep pockets. Everyone deserves to be safe online, regardless of technical knowledge or financial resources. This project exists to democratize cybersecurity and help bring down the all-time high data breach rates by giving everyone access to the same defensive capabilities that Fortune 500 companies have.
+
+**Open Source. Local AI. Perfect Privacy. Zero Cost.**
+
 ---
 
 **Star ⭐ this repo if you find it useful!**
+
+**Latest Release:** [v3.1.1 - Perfect Security Score 100/100](https://github.com/ssfdre38/ai-security-scanner/releases/tag/v3.1.1) ✨
 
 Made with ❤️ for the security community
