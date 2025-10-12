@@ -6,7 +6,7 @@ Thank you for your interest in contributing! This document provides guidelines f
 
 ### Reporting Bugs
 
-1. Check if the bug has already been reported in [Issues](https://github.com/yourusername/ai-security-scanner/issues)
+1. Check if the bug has already been reported in [Issues](https://github.com/ssfdre38/ai-security-scanner/issues)
 2. If not, create a new issue with:
    - Clear title and description
    - Steps to reproduce
@@ -16,7 +16,7 @@ Thank you for your interest in contributing! This document provides guidelines f
 
 ### Suggesting Features
 
-1. Check [existing feature requests](https://github.com/yourusername/ai-security-scanner/issues?q=is%3Aissue+label%3Aenhancement)
+1. Check [existing feature requests](https://github.com/ssfdre38/ai-security-scanner/issues?q=is%3Aissue+label%3Aenhancement)
 2. Create a new issue describing:
    - The problem you're trying to solve
    - Your proposed solution
@@ -65,7 +65,7 @@ We'll respond within 48 hours.
 ## Development Setup
 
 ```bash
-git clone https://github.com/yourusername/ai-security-scanner.git
+git clone https://github.com/ssfdre38/ai-security-scanner.git
 cd ai-security-scanner
 ./install.sh
 ```
@@ -95,7 +95,7 @@ If you're adding features or changing behavior:
 
 ## Questions?
 
-- Open a [Discussion](https://github.com/yourusername/ai-security-scanner/discussions)
+- Open a [Discussion](https://github.com/ssfdre38/ai-security-scanner/discussions)
 - Ask in issues with `question` label
 
 ## License

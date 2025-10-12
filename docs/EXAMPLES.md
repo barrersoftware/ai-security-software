@@ -114,7 +114,7 @@ jobs:
       - name: Install Scanner
         run: |
           curl -fsSL https://ollama.com/install.sh | sh
-          git clone https://github.com/yourusername/ai-security-scanner.git
+          git clone https://github.com/ssfdre38/ai-security-scanner.git
           cd ai-security-scanner && ./install.sh
       - name: Scan Code
         run: ai-code-review .

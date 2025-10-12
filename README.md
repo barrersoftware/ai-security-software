@@ -62,7 +62,7 @@ Comprehensive security analysis tools using local Large Language Models (LLMs) f
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/ai-security-scanner.git
+git clone https://github.com/ssfdre38/ai-security-scanner.git
 cd ai-security-scanner
 
 # Run the installer
@@ -282,8 +282,8 @@ This tool is for security analysis and educational purposes. It complements but 
 
 ## 📞 Support
 
-- **Issues:** [GitHub Issues](https://github.com/yourusername/ai-security-scanner/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/yourusername/ai-security-scanner/discussions)
+- **Issues:** [GitHub Issues](https://github.com/ssfdre38/ai-security-scanner/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/ssfdre38/ai-security-scanner/discussions)
 - **Security Issues:** security@yourdomain.com (private disclosure)
 
 ## 🗺️ Roadmap

@@ -19,7 +19,7 @@ Complete installation instructions for AI Security Scanner.
 ## Quick Installation
 
 ```bash
-git clone https://github.com/yourusername/ai-security-scanner.git
+git clone https://github.com/ssfdre38/ai-security-scanner.git
 cd ai-security-scanner
 sudo ./install.sh
 ```
@@ -110,7 +110,7 @@ ollama pull llama3.1:70b
 ### 5. Install Scripts
 
 ```bash
-git clone https://github.com/yourusername/ai-security-scanner.git
+git clone https://github.com/ssfdre38/ai-security-scanner.git
 cd ai-security-scanner
 chmod +x scripts/*.sh install.sh
 
