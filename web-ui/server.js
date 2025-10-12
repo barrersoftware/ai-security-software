@@ -25,14 +25,26 @@ const scannerRoutes = require('./routes/scanner');
 const reportsRoutes = require('./routes/reports');
 const chatRoutes = require('./routes/chat');
 const systemRoutes = require('./routes/system');
+const advancedRoutes = require('./routes/advanced-scanner');
 
 app.use('/api/scanner', scannerRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/system', systemRoutes);
+app.use('/api/advanced', advancedRoutes);
 
 // WebSocket connections for real-time updates
 const clients = new Set();
+
+// Global broadcast function for advanced scanners
+global.broadcast = (message) => {
+    const data = JSON.stringify(message);
+    clients.forEach(client => {
+        if (client.readyState === client.OPEN) {
+            client.send(data);
+        }
+    });
+};
 
 wss.on('connection', (ws) => {
   clients.add(ws);

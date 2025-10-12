@@ -1,0 +1,182 @@
+# AI Security Scanner - Custom Rules
+# Define your own security checks
+
+rules:
+  # System Security Rules
+  - id: custom-001
+    name: Check for exposed admin panel
+    description: Verify that admin panel is not publicly accessible
+    severity: critical
+    category: web-security
+    enabled: true
+    command: |
+      curl -s -o /dev/null -w "%{http_code}" http://localhost/admin
+    expect: non-zero  # Should return 404 or connection refused
+    remediation: |
+      Restrict admin panel access with firewall rules or .htaccess
+      Example: iptables -A INPUT -p tcp --dport 80 -s trusted_ip -j ACCEPT
+    
+  - id: custom-002
+    name: Verify fail2ban is running
+    description: Check if fail2ban service is active
+    severity: warning
+    category: security-services
+    enabled: true
+    command: systemctl is-active fail2ban
+    expect: zero  # Should return active
+    remediation: |
+      Install and enable fail2ban:
+      sudo apt install fail2ban
+      sudo systemctl enable --now fail2ban
+    
+  - id: custom-003
+    name: Check for world-writable files in /etc
+    description: Find files in /etc with 777 permissions
+    severity: critical
+    category: file-permissions
+    enabled: true
+    command: find /etc -type f -perm 0777 2>/dev/null | wc -l
+    expect: zero  # Should return 0
+    remediation: |
+      Fix permissions on world-writable files:
+      find /etc -type f -perm 0777 -exec chmod 644 {} \;
+    
+  - id: custom-004
+    name: Verify SSH port is not default
+    description: Check if SSH is running on port 22
+    severity: warning
+    category: ssh-security
+    enabled: true
+    command: grep "^Port " /etc/ssh/sshd_config | awk '{print $2}'
+    expect: non-zero  # Should not be default port
+    remediation: |
+      Change SSH port in /etc/ssh/sshd_config:
+      Port 2222
+      Then: sudo systemctl restart sshd
+    
+  - id: custom-005
+    name: Check for unauthorized cron jobs
+    description: Detect suspicious cron jobs
+    severity: warning
+    category: scheduled-tasks
+    enabled: true
+    command: |
+      grep -r "curl\|wget" /etc/cron* /var/spool/cron 2>/dev/null | grep -v "#" | wc -l
+    expect: zero  # Should not have suspicious curl/wget in cron
+    remediation: |
+      Review and remove suspicious cron jobs:
+      crontab -l
+      crontab -e
+  
+  # Network Security Rules
+  - id: custom-006
+    name: Check for open MySQL port to internet
+    description: Verify MySQL is not exposed to 0.0.0.0
+    severity: critical
+    category: database-security
+    enabled: true
+    command: |
+      netstat -tuln | grep :3306 | grep "0.0.0.0" | wc -l
+    expect: zero
+    remediation: |
+      Bind MySQL to localhost in /etc/mysql/my.cnf:
+      bind-address = 127.0.0.1
+    
+  - id: custom-007
+    name: Verify firewall is active
+    description: Check if UFW or iptables is active
+    severity: critical
+    category: firewall
+    enabled: true
+    command: |
+      ufw status | grep -q "Status: active" && echo 0 || iptables -L | grep -q "Chain INPUT" && echo 0 || echo 1
+    expect: zero
+    remediation: |
+      Enable UFW firewall:
+      sudo ufw enable
+      sudo ufw default deny incoming
+      sudo ufw default allow outgoing
+  
+  # Application Security Rules
+  - id: custom-008
+    name: Check for PHP safe mode
+    description: Verify PHP safe mode is disabled (deprecated but check)
+    severity: info
+    category: php-security
+    enabled: true
+    command: |
+      php -i 2>/dev/null | grep "safe_mode" | grep -q "Off" && echo 0 || echo 1
+    expect: zero
+    remediation: |
+      PHP safe mode is deprecated. Use open_basedir instead.
+  
+  - id: custom-009
+    name: Check for Docker daemon exposure
+    description: Verify Docker daemon is not exposed to network
+    severity: critical
+    category: container-security
+    enabled: true
+    command: |
+      netstat -tuln | grep :2375 | wc -l
+    expect: zero
+    remediation: |
+      Do not expose Docker daemon. Use Docker socket with proper permissions.
+      Remove -H tcp://0.0.0.0:2375 from Docker daemon config.
+  
+  - id: custom-010
+    name: Check for weak SSL/TLS ciphers
+    description: Test for weak SSL ciphers in web server
+    severity: warning
+    category: ssl-security
+    enabled: true
+    command: |
+      nmap --script ssl-enum-ciphers -p 443 localhost 2>/dev/null | grep -i "weak" | wc -l
+    expect: zero
+    remediation: |
+      Update SSL configuration to disable weak ciphers.
+      For nginx: ssl_ciphers 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
+
+# Rule Groups
+rule_groups:
+  critical:
+    - custom-001
+    - custom-003
+    - custom-006
+    - custom-007
+    - custom-009
+  
+  web-security:
+    - custom-001
+    - custom-010
+  
+  ssh-security:
+    - custom-004
+  
+  database-security:
+    - custom-006
+  
+  all-security:
+    - custom-001
+    - custom-002
+    - custom-003
+    - custom-004
+    - custom-005
+    - custom-006
+    - custom-007
+    - custom-008
+    - custom-009
+    - custom-010
+
+# Execution Configuration
+execution:
+  parallel: true
+  max_concurrent: 5
+  timeout: 30  # seconds per rule
+  continue_on_failure: true
+  
+# Reporting
+reporting:
+  format: markdown
+  include_passed: false  # Only show failures
+  include_remediation: true
+  severity_filter: all  # all, critical, warning, info

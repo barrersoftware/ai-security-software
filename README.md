@@ -423,16 +423,91 @@ cd cloud-security
 
 See [cloud-security/README.md](cloud-security/README.md) for full documentation.
 
+## 🎯 Custom Rule Engine
+
+**NEW!** Define your own security checks with YAML.
+
+```bash
+cd custom-rules
+cp rules.yaml.example rules.yaml
+./run-rules.sh --group critical
+```
+
+**Features:**
+- 📝 YAML-based rule definitions
+- ⚡ Parallel execution support
+- 🎨 Severity levels (critical/warning/info)
+- 📊 Rule grouping and filtering
+- 🔧 Custom remediation instructions
+
+See [custom-rules/README.md](custom-rules/README.md) for full documentation.
+
+## ☸️ Kubernetes Security
+
+**NEW!** Comprehensive K8s cluster security auditing.
+
+```bash
+cd kubernetes
+./scan-k8s.sh
+```
+
+**Coverage:**
+- Pod security (privileged, root)
+- RBAC analysis
+- Network policies
+- Secrets management
+- Resource quotas
+- Container images
+
+See [kubernetes/README.md](kubernetes/README.md) for full documentation.
+
+## 🗄️ Database Security
+
+**NEW!** Audit MySQL, PostgreSQL, MongoDB, and Redis.
+
+```bash
+cd database-security
+./scan-databases.sh --all
+```
+
+**Checks:**
+- Connection security (bind addresses)
+- Authentication configuration
+- Encryption (SSL/TLS, at-rest)
+- Public exposure detection
+- Configuration best practices
+
+See [database-security/README.md](database-security/README.md) for full documentation.
+
+## 📋 Compliance Frameworks
+
+**NEW!** PCI-DSS, HIPAA, SOC2, GDPR compliance scanning.
+
+```bash
+cd compliance
+./scan-compliance.sh --framework pci-dss
+```
+
+**Frameworks:**
+- PCI-DSS 3.2.1 (Payment Card Industry)
+- HIPAA Security Rule (Healthcare)
+- SOC 2 Type II (Service organizations)
+- GDPR (Data protection)
+
+See [compliance/README.md](compliance/README.md) for full documentation.
+
 ## 🗺️ Roadmap
 
 - [x] ✅ Web UI dashboard
 - [x] ✅ Integration with Slack/Discord/Teams
 - [x] ✅ Multi-server scanning from central location
 - [x] ✅ Cloud provider security (AWS/GCP/Azure)
-- [ ] Custom rule engine
-- [ ] Kubernetes security scanning
-- [ ] Database security analysis
-- [ ] Compliance framework templates (PCI-DSS, HIPAA, SOC2)
+- [x] ✅ Custom rule engine
+- [x] ✅ Kubernetes security scanning
+- [x] ✅ Database security analysis
+- [x] ✅ Compliance framework templates (PCI-DSS, HIPAA, SOC2, GDPR)
+
+**🎉 100% Complete!** All roadmap features implemented!
 
 ---
 
