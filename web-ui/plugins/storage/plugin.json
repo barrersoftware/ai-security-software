@@ -1,0 +1,29 @@
+{
+  "name": "storage",
+  "version": "1.0.0",
+  "description": "Backup, storage, and disaster recovery management with remote SFTP support",
+  "author": "AI Security Scanner Team",
+  "priority": 10,
+  "dependencies": ["auth", "security"],
+  "features": [
+    "Local backup management",
+    "Remote SFTP backup",
+    "Multiple backup destinations",
+    "Scheduled backups",
+    "Report file management",
+    "Configuration persistence",
+    "Backup verification",
+    "Retention policies",
+    "Restore functionality",
+    "Disaster recovery"
+  ],
+  "config": {
+    "backupDir": "data/backups",
+    "reportsDir": "data/reports",
+    "configDir": "data/config",
+    "maxBackups": 10,
+    "retentionDays": 30,
+    "enableSFTP": false,
+    "sftpHosts": []
+  }
+}

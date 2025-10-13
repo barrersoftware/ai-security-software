@@ -71,6 +71,14 @@
       "role": "admin",
       "createdAt": "2025-10-13T07:28:23.992Z",
       "expiresAt": "2025-10-14T07:28:23.992Z"
+    },
+    {
+      "token": "8b5091c38495c7816c0fe715985bd1ea791767bdddf09c55a030436706447330",
+      "userId": "b01fd024-4db1-4ad6-a875-17a3bb9e8702",
+      "username": "admin",
+      "role": "admin",
+      "createdAt": "2025-10-13T07:52:27.369Z",
+      "expiresAt": "2025-10-14T07:52:27.369Z"
     }
   ]
 }
