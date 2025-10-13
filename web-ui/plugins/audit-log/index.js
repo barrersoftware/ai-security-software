@@ -16,6 +16,7 @@ class AuditLogPlugin {
     this.auditQuery = null;
     this.complianceReporter = null;
     this.securityMonitor = null;
+    this.auditMiddleware = null;
   }
 
   /**
@@ -33,12 +34,14 @@ class AuditLogPlugin {
     const AuditQuery = require('./audit-query');
     const ComplianceReporter = require('./compliance-reporter');
     const SecurityMonitor = require('./security-monitor');
+    const AuditMiddleware = require('./audit-middleware');
 
     // Initialize services
     this.auditLogger = new AuditLogger(this.db, this.logger);
     this.auditQuery = new AuditQuery(this.db, this.logger);
     this.complianceReporter = new ComplianceReporter(this.db, this.logger);
     this.securityMonitor = new SecurityMonitor(this.db, this.logger, this.auditLogger);
+    this.auditMiddleware = new AuditMiddleware(this.auditLogger, this.logger);
 
     await this.auditLogger.init();
     await this.securityMonitor.init();
@@ -48,10 +51,24 @@ class AuditLogPlugin {
     context.services.register('AuditQuery', this.auditQuery);
     context.services.register('ComplianceReporter', this.complianceReporter);
     context.services.register('SecurityMonitor', this.securityMonitor);
+    context.services.register('AuditMiddleware', this.auditMiddleware);
 
     this.logger.info('[AuditLog] ✅ Enhanced Audit Logging plugin initialized');
+    this.logger.info('[AuditLog] 📡 Global audit middleware available via middleware()');
     
     return true;
+  }
+  
+  /**
+   * Get middleware for automatic audit logging
+   */
+  middleware() {
+    if (!this.auditMiddleware) {
+      this.logger.warn('[AuditLog] Middleware requested before initialization');
+      return (req, res, next) => next();
+    }
+    // Return the middleware function directly
+    return this.auditMiddleware.middleware();
   }
 
   /**
@@ -437,106 +454,6 @@ class AuditLogPlugin {
     app.use('/api/audit', router);
     
     this.logger.info('[AuditLog] ✅ Registered 9 audit API endpoints');
-  }
-
-  /**
-   * Register middleware for automatic audit logging
-   */
-  middleware() {
-    return [
-      // Audit logging middleware - tracks all requests
-      async (req, res, next) => {
-        // Skip for static files and health checks
-        if (req.path.startsWith('/static') || 
-            req.path === '/health' || 
-            req.path === '/api/health') {
-          return next();
-        }
-
-        // Capture response for logging
-        const originalSend = res.send;
-        const originalJson = res.json;
-        let responseBody = null;
-        let responseSent = false;
-
-        res.send = function(data) {
-          if (!responseSent) {
-            responseBody = data;
-            responseSent = true;
-          }
-          return originalSend.call(this, data);
-        };
-
-        res.json = function(data) {
-          if (!responseSent) {
-            responseBody = data;
-            responseSent = true;
-          }
-          return originalJson.call(this, data);
-        };
-
-        // Capture start time
-        const startTime = Date.now();
-
-        // Log after response is sent
-        res.on('finish', async () => {
-          try {
-            const duration = Date.now() - startTime;
-
-            // Determine category based on path
-            let category = 'api_access';
-            if (req.path.includes('/auth')) category = 'authentication';
-            else if (req.path.includes('/users')) category = 'user_management';
-            else if (req.path.includes('/tenants')) category = 'tenant_management';
-            else if (req.path.includes('/config')) category = 'configuration';
-            else if (req.path.includes('/scan')) category = 'security_scan';
-
-            // Determine severity based on status code
-            let severity = 'info';
-            if (res.statusCode >= 500) severity = 'critical';
-            else if (res.statusCode >= 400) severity = 'warning';
-            else if (res.statusCode >= 300) severity = 'info';
-
-            // Special handling for security events
-            if (category === 'authentication' && res.statusCode === 401) {
-              severity = 'security';
-            }
-
-            // Log the request
-            if (this.auditLogger) {
-              await this.auditLogger.log({
-                tenantId: req.user ? req.user.tenantId : null,
-                userId: req.user ? req.user.id : null,
-                category,
-                action: `${req.method.toLowerCase()}_${req.path.split('/').pop() || 'root'}`,
-                severity,
-                details: {
-                  method: req.method,
-                  path: req.path,
-                  statusCode: res.statusCode,
-                  duration,
-                  ip: req.ip || req.connection.remoteAddress,
-                  userAgent: req.get('user-agent')
-                },
-                metadata: {
-                  query: req.query,
-                  params: req.params,
-                  // Don't log request body for security
-                  hasBody: !!req.body && Object.keys(req.body).length > 0
-                }
-              });
-            }
-          } catch (error) {
-            // Don't fail the request if audit logging fails
-            if (this.logger) {
-              this.logger.error('[AuditLog] Error in audit middleware:', error);
-            }
-          }
-        });
-
-        next();
-      }
-    ];
   }
 
   /**
