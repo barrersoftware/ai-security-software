@@ -1,0 +1,560 @@
+/**
+ * Enhanced Audit Logging Plugin
+ * 
+ * Provides comprehensive audit trail logging for security, compliance, and forensics.
+ * Tracks all user actions, security events, and system changes.
+ */
+
+const express = require('express');
+
+class AuditLogPlugin {
+  constructor() {
+    this.name = 'audit-log';
+    this.version = '1.0.0';
+    this.logger = null;
+    this.auditLogger = null;
+    this.auditQuery = null;
+    this.complianceReporter = null;
+    this.securityMonitor = null;
+  }
+
+  /**
+   * Initialize the audit logging plugin
+   */
+  async init(context) {
+    this.logger = context.logger;
+    this.db = context.db;
+    this.services = context.services;
+    
+    this.logger.info('[AuditLog] Initializing Enhanced Audit Logging plugin...');
+
+    // Load services
+    const AuditLogger = require('./audit-logger');
+    const AuditQuery = require('./audit-query');
+    const ComplianceReporter = require('./compliance-reporter');
+    const SecurityMonitor = require('./security-monitor');
+
+    // Initialize services
+    this.auditLogger = new AuditLogger(this.db, this.logger);
+    this.auditQuery = new AuditQuery(this.db, this.logger);
+    this.complianceReporter = new ComplianceReporter(this.db, this.logger);
+    this.securityMonitor = new SecurityMonitor(this.db, this.logger, this.auditLogger);
+
+    await this.auditLogger.init();
+    await this.securityMonitor.init();
+
+    // Register services
+    context.services.register('AuditLogger', this.auditLogger);
+    context.services.register('AuditQuery', this.auditQuery);
+    context.services.register('ComplianceReporter', this.complianceReporter);
+    context.services.register('SecurityMonitor', this.securityMonitor);
+
+    this.logger.info('[AuditLog] ✅ Enhanced Audit Logging plugin initialized');
+    
+    return true;
+  }
+
+  /**
+   * Register API routes
+   */
+  routes(app) {
+    const router = express.Router();
+
+    // Helper to check authentication
+    const requireAuth = (req, res, next) => {
+      if (!req.user) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+      next();
+    };
+
+    // Helper to check admin role
+    const requireAdmin = (req, res, next) => {
+      if (!req.user || !req.user.isAdmin) {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+      next();
+    };
+
+    // Helper to check auditor role
+    const requireAuditor = (req, res, next) => {
+      if (!req.user || (!req.user.isAdmin && req.user.role !== 'auditor')) {
+        return res.status(403).json({ error: 'Auditor or admin access required' });
+      }
+      next();
+    };
+
+    /**
+     * GET /api/audit/logs
+     * Query audit logs with filtering and pagination
+     */
+    router.get('/logs', requireAuth, requireAuditor, async (req, res) => {
+      try {
+        const {
+          tenantId = req.user.tenantId,
+          category,
+          severity,
+          userId,
+          startDate,
+          endDate,
+          page = 1,
+          limit = 50,
+          sort = '-timestamp'
+        } = req.query;
+
+        // Admin can query all tenants, users can only query their own
+        const effectiveTenantId = req.user.isAdmin ? tenantId : req.user.tenantId;
+
+        const filters = {
+          tenantId: effectiveTenantId,
+          category,
+          severity,
+          userId,
+          startDate,
+          endDate
+        };
+
+        const result = await this.auditQuery.queryLogs(filters, {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          sort
+        });
+
+        // Log this audit query
+        await this.auditLogger.log({
+          tenantId: req.user.tenantId,
+          userId: req.user.id,
+          category: 'data_access',
+          action: 'audit_logs_queried',
+          severity: 'info',
+          details: { filters, resultCount: result.data.length }
+        });
+
+        res.json(result);
+      } catch (error) {
+        this.logger.error('[AuditLog] Error querying logs:', error);
+        res.status(500).json({ error: 'Failed to query audit logs' });
+      }
+    });
+
+    /**
+     * GET /api/audit/events/:id
+     * Get details of a specific audit event
+     */
+    router.get('/events/:id', requireAuth, requireAuditor, async (req, res) => {
+      try {
+        const { id } = req.params;
+        const event = await this.auditQuery.getEvent(id);
+
+        if (!event) {
+          return res.status(404).json({ error: 'Audit event not found' });
+        }
+
+        // Check tenant access
+        if (!req.user.isAdmin && event.tenantId !== req.user.tenantId) {
+          return res.status(403).json({ error: 'Access denied' });
+        }
+
+        // Log this access
+        await this.auditLogger.log({
+          tenantId: req.user.tenantId,
+          userId: req.user.id,
+          category: 'data_access',
+          action: 'audit_event_viewed',
+          severity: 'info',
+          details: { eventId: id }
+        });
+
+        res.json(event);
+      } catch (error) {
+        this.logger.error('[AuditLog] Error getting event:', error);
+        res.status(500).json({ error: 'Failed to get audit event' });
+      }
+    });
+
+    /**
+     * GET /api/audit/security-events
+     * Get security-specific events (logins, failures, permission changes)
+     */
+    router.get('/security-events', requireAuth, requireAdmin, async (req, res) => {
+      try {
+        const {
+          tenantId,
+          startDate,
+          endDate,
+          page = 1,
+          limit = 50
+        } = req.query;
+
+        const events = await this.auditQuery.getSecurityEvents({
+          tenantId,
+          startDate,
+          endDate
+        }, {
+          page: parseInt(page),
+          limit: parseInt(limit)
+        });
+
+        res.json(events);
+      } catch (error) {
+        this.logger.error('[AuditLog] Error getting security events:', error);
+        res.status(500).json({ error: 'Failed to get security events' });
+      }
+    });
+
+    /**
+     * GET /api/audit/user-activity/:userId
+     * Get audit trail for a specific user
+     */
+    router.get('/user-activity/:userId', requireAuth, requireAuditor, async (req, res) => {
+      try {
+        const { userId } = req.params;
+        const {
+          startDate,
+          endDate,
+          page = 1,
+          limit = 50
+        } = req.query;
+
+        const activity = await this.auditQuery.getUserActivity(userId, {
+          startDate,
+          endDate
+        }, {
+          page: parseInt(page),
+          limit: parseInt(limit)
+        });
+
+        // Check tenant access for the target user
+        if (!req.user.isAdmin && activity.data.length > 0) {
+          const firstEvent = activity.data[0];
+          if (firstEvent.tenantId !== req.user.tenantId) {
+            return res.status(403).json({ error: 'Access denied' });
+          }
+        }
+
+        res.json(activity);
+      } catch (error) {
+        this.logger.error('[AuditLog] Error getting user activity:', error);
+        res.status(500).json({ error: 'Failed to get user activity' });
+      }
+    });
+
+    /**
+     * GET /api/audit/compliance/report
+     * Generate compliance report for specified standard
+     */
+    router.get('/compliance/report', requireAuth, requireAdmin, async (req, res) => {
+      try {
+        const {
+          standard = 'GDPR',
+          tenantId,
+          startDate,
+          endDate,
+          format = 'json'
+        } = req.query;
+
+        const report = await this.complianceReporter.generateReport({
+          standard,
+          tenantId,
+          startDate,
+          endDate
+        });
+
+        // Log report generation
+        await this.auditLogger.log({
+          tenantId: req.user.tenantId,
+          userId: req.user.id,
+          category: 'compliance',
+          action: 'compliance_report_generated',
+          severity: 'info',
+          details: { standard, tenantId, startDate, endDate }
+        });
+
+        if (format === 'pdf') {
+          // TODO: Generate PDF report
+          res.status(501).json({ error: 'PDF format not yet implemented' });
+        } else if (format === 'csv') {
+          // Convert to CSV
+          const csv = this.complianceReporter.toCSV(report);
+          res.setHeader('Content-Type', 'text/csv');
+          res.setHeader('Content-Disposition', `attachment; filename="compliance-report-${standard}-${Date.now()}.csv"`);
+          res.send(csv);
+        } else {
+          res.json(report);
+        }
+      } catch (error) {
+        this.logger.error('[AuditLog] Error generating compliance report:', error);
+        res.status(500).json({ error: 'Failed to generate compliance report' });
+      }
+    });
+
+    /**
+     * GET /api/audit/export
+     * Export audit logs in various formats
+     */
+    router.get('/export', requireAuth, requireAuditor, async (req, res) => {
+      try {
+        const {
+          tenantId = req.user.tenantId,
+          startDate,
+          endDate,
+          format = 'json'
+        } = req.query;
+
+        // Admin can export all tenants, users can only export their own
+        const effectiveTenantId = req.user.isAdmin ? tenantId : req.user.tenantId;
+
+        const logs = await this.auditQuery.exportLogs({
+          tenantId: effectiveTenantId,
+          startDate,
+          endDate
+        });
+
+        // Log the export
+        await this.auditLogger.log({
+          tenantId: req.user.tenantId,
+          userId: req.user.id,
+          category: 'data_access',
+          action: 'audit_logs_exported',
+          severity: 'info',
+          details: { format, recordCount: logs.length, startDate, endDate }
+        });
+
+        if (format === 'csv') {
+          const csv = this.auditQuery.toCSV(logs);
+          res.setHeader('Content-Type', 'text/csv');
+          res.setHeader('Content-Disposition', `attachment; filename="audit-logs-${Date.now()}.csv"`);
+          res.send(csv);
+        } else if (format === 'json') {
+          res.setHeader('Content-Type', 'application/json');
+          res.setHeader('Content-Disposition', `attachment; filename="audit-logs-${Date.now()}.json"`);
+          res.json(logs);
+        } else {
+          res.status(400).json({ error: 'Unsupported format. Use json or csv.' });
+        }
+      } catch (error) {
+        this.logger.error('[AuditLog] Error exporting logs:', error);
+        res.status(500).json({ error: 'Failed to export audit logs' });
+      }
+    });
+
+    /**
+     * GET /api/audit/statistics
+     * Get audit log statistics and summaries
+     */
+    router.get('/statistics', requireAuth, requireAdmin, async (req, res) => {
+      try {
+        const {
+          tenantId,
+          startDate,
+          endDate
+        } = req.query;
+
+        const stats = await this.auditQuery.getStatistics({
+          tenantId,
+          startDate,
+          endDate
+        });
+
+        res.json(stats);
+      } catch (error) {
+        this.logger.error('[AuditLog] Error getting statistics:', error);
+        res.status(500).json({ error: 'Failed to get audit statistics' });
+      }
+    });
+
+    /**
+     * GET /api/audit/alerts
+     * Get security alerts triggered by audit monitoring
+     */
+    router.get('/alerts', requireAuth, requireAdmin, async (req, res) => {
+      try {
+        const {
+          tenantId,
+          severity,
+          status = 'active',
+          page = 1,
+          limit = 50
+        } = req.query;
+
+        const alerts = await this.securityMonitor.getAlerts({
+          tenantId,
+          severity,
+          status
+        }, {
+          page: parseInt(page),
+          limit: parseInt(limit)
+        });
+
+        res.json(alerts);
+      } catch (error) {
+        this.logger.error('[AuditLog] Error getting alerts:', error);
+        res.status(500).json({ error: 'Failed to get security alerts' });
+      }
+    });
+
+    /**
+     * POST /api/audit/search
+     * Advanced search of audit logs with complex queries
+     */
+    router.post('/search', requireAuth, requireAuditor, async (req, res) => {
+      try {
+        const {
+          tenantId = req.user.tenantId,
+          query,
+          page = 1,
+          limit = 50
+        } = req.body;
+
+        // Admin can search all tenants, users can only search their own
+        const effectiveTenantId = req.user.isAdmin ? tenantId : req.user.tenantId;
+
+        const results = await this.auditQuery.advancedSearch({
+          tenantId: effectiveTenantId,
+          query
+        }, {
+          page: parseInt(page),
+          limit: parseInt(limit)
+        });
+
+        // Log the search
+        await this.auditLogger.log({
+          tenantId: req.user.tenantId,
+          userId: req.user.id,
+          category: 'data_access',
+          action: 'audit_logs_searched',
+          severity: 'info',
+          details: { query: query, resultCount: results.data.length }
+        });
+
+        res.json(results);
+      } catch (error) {
+        this.logger.error('[AuditLog] Error searching logs:', error);
+        res.status(500).json({ error: 'Failed to search audit logs' });
+      }
+    });
+
+    app.use('/api/audit', router);
+    
+    this.logger.info('[AuditLog] ✅ Registered 9 audit API endpoints');
+  }
+
+  /**
+   * Register middleware for automatic audit logging
+   */
+  middleware() {
+    return [
+      // Audit logging middleware - tracks all requests
+      async (req, res, next) => {
+        // Skip for static files and health checks
+        if (req.path.startsWith('/static') || 
+            req.path === '/health' || 
+            req.path === '/api/health') {
+          return next();
+        }
+
+        // Capture response for logging
+        const originalSend = res.send;
+        const originalJson = res.json;
+        let responseBody = null;
+        let responseSent = false;
+
+        res.send = function(data) {
+          if (!responseSent) {
+            responseBody = data;
+            responseSent = true;
+          }
+          return originalSend.call(this, data);
+        };
+
+        res.json = function(data) {
+          if (!responseSent) {
+            responseBody = data;
+            responseSent = true;
+          }
+          return originalJson.call(this, data);
+        };
+
+        // Capture start time
+        const startTime = Date.now();
+
+        // Log after response is sent
+        res.on('finish', async () => {
+          try {
+            const duration = Date.now() - startTime;
+
+            // Determine category based on path
+            let category = 'api_access';
+            if (req.path.includes('/auth')) category = 'authentication';
+            else if (req.path.includes('/users')) category = 'user_management';
+            else if (req.path.includes('/tenants')) category = 'tenant_management';
+            else if (req.path.includes('/config')) category = 'configuration';
+            else if (req.path.includes('/scan')) category = 'security_scan';
+
+            // Determine severity based on status code
+            let severity = 'info';
+            if (res.statusCode >= 500) severity = 'critical';
+            else if (res.statusCode >= 400) severity = 'warning';
+            else if (res.statusCode >= 300) severity = 'info';
+
+            // Special handling for security events
+            if (category === 'authentication' && res.statusCode === 401) {
+              severity = 'security';
+            }
+
+            // Log the request
+            if (this.auditLogger) {
+              await this.auditLogger.log({
+                tenantId: req.user ? req.user.tenantId : null,
+                userId: req.user ? req.user.id : null,
+                category,
+                action: `${req.method.toLowerCase()}_${req.path.split('/').pop() || 'root'}`,
+                severity,
+                details: {
+                  method: req.method,
+                  path: req.path,
+                  statusCode: res.statusCode,
+                  duration,
+                  ip: req.ip || req.connection.remoteAddress,
+                  userAgent: req.get('user-agent')
+                },
+                metadata: {
+                  query: req.query,
+                  params: req.params,
+                  // Don't log request body for security
+                  hasBody: !!req.body && Object.keys(req.body).length > 0
+                }
+              });
+            }
+          } catch (error) {
+            // Don't fail the request if audit logging fails
+            if (this.logger) {
+              this.logger.error('[AuditLog] Error in audit middleware:', error);
+            }
+          }
+        });
+
+        next();
+      }
+    ];
+  }
+
+  /**
+   * Cleanup on plugin unload
+   */
+  async cleanup() {
+    this.logger.info('[AuditLog] Cleaning up Enhanced Audit Logging plugin...');
+    
+    if (this.securityMonitor) {
+      await this.securityMonitor.cleanup();
+    }
+    
+    if (this.auditLogger) {
+      await this.auditLogger.cleanup();
+    }
+    
+    this.logger.info('[AuditLog] ✅ Enhanced Audit Logging plugin cleaned up');
+  }
+}
+
+module.exports = AuditLogPlugin;

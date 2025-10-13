@@ -1,0 +1,149 @@
+{
+  "name": "audit-log",
+  "version": "1.0.0",
+  "displayName": "Enhanced Audit Logging",
+  "description": "Comprehensive audit trail logging for security, compliance, and forensics",
+  "author": "AI Security Scanner Team",
+  "license": "MIT",
+  "enabled": true,
+  "dependencies": ["auth", "tenants"],
+  "loadPriority": 60,
+  "category": "security",
+  "capabilities": [
+    "audit-logging",
+    "compliance-reporting",
+    "security-monitoring",
+    "forensics",
+    "export"
+  ],
+  "services": [
+    {
+      "name": "AuditLogger",
+      "description": "Core audit logging service for recording all system events",
+      "singleton": true
+    },
+    {
+      "name": "AuditQuery",
+      "description": "Query and search audit logs with advanced filtering",
+      "singleton": true
+    },
+    {
+      "name": "ComplianceReporter",
+      "description": "Generate compliance reports for various standards (GDPR, SOC2, HIPAA)",
+      "singleton": true
+    },
+    {
+      "name": "SecurityMonitor",
+      "description": "Monitor security events and trigger alerts on suspicious activity",
+      "singleton": true
+    }
+  ],
+  "config": {
+    "retention": {
+      "days": 90,
+      "description": "Days to retain audit logs (compliance default: 90 days)"
+    },
+    "storage": {
+      "type": "database",
+      "description": "Storage backend: 'database' or 'file'"
+    },
+    "realTimeAlerts": {
+      "enabled": true,
+      "description": "Enable real-time alerts for critical security events"
+    },
+    "sensitiveDataMasking": {
+      "enabled": true,
+      "description": "Mask sensitive data in audit logs (passwords, tokens, etc.)"
+    },
+    "compliance": {
+      "standards": ["GDPR", "SOC2", "HIPAA"],
+      "description": "Compliance standards to track"
+    }
+  },
+  "api": {
+    "endpoints": [
+      {
+        "method": "GET",
+        "path": "/api/audit/logs",
+        "description": "Query audit logs with filtering and pagination",
+        "auth": "required",
+        "roles": ["admin", "auditor"]
+      },
+      {
+        "method": "GET",
+        "path": "/api/audit/events/:id",
+        "description": "Get details of a specific audit event",
+        "auth": "required",
+        "roles": ["admin", "auditor"]
+      },
+      {
+        "method": "GET",
+        "path": "/api/audit/security-events",
+        "description": "Get security-specific events (logins, failures, permission changes)",
+        "auth": "required",
+        "roles": ["admin", "security"]
+      },
+      {
+        "method": "GET",
+        "path": "/api/audit/user-activity/:userId",
+        "description": "Get audit trail for a specific user",
+        "auth": "required",
+        "roles": ["admin", "auditor"]
+      },
+      {
+        "method": "GET",
+        "path": "/api/audit/compliance/report",
+        "description": "Generate compliance report for specified standard",
+        "auth": "required",
+        "roles": ["admin", "compliance"]
+      },
+      {
+        "method": "GET",
+        "path": "/api/audit/export",
+        "description": "Export audit logs in various formats (JSON, CSV, PDF)",
+        "auth": "required",
+        "roles": ["admin", "auditor"]
+      },
+      {
+        "method": "GET",
+        "path": "/api/audit/statistics",
+        "description": "Get audit log statistics and summaries",
+        "auth": "required",
+        "roles": ["admin"]
+      },
+      {
+        "method": "GET",
+        "path": "/api/audit/alerts",
+        "description": "Get security alerts triggered by audit monitoring",
+        "auth": "required",
+        "roles": ["admin", "security"]
+      },
+      {
+        "method": "POST",
+        "path": "/api/audit/search",
+        "description": "Advanced search of audit logs with complex queries",
+        "auth": "required",
+        "roles": ["admin", "auditor"]
+      }
+    ]
+  },
+  "eventCategories": [
+    "authentication",
+    "authorization",
+    "user_management",
+    "tenant_management",
+    "configuration",
+    "data_access",
+    "security_scan",
+    "api_access",
+    "system_changes",
+    "compliance"
+  ],
+  "severityLevels": [
+    "info",
+    "warning",
+    "error",
+    "critical",
+    "security"
+  ]
+}
