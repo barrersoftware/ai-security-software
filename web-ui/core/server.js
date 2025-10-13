@@ -95,6 +95,9 @@ class CoreServer {
   setupMiddleware() {
     this.logger.debug('Setting up core middleware...');
     
+    // Disable X-Powered-By header early
+    this.app.disable('x-powered-by');
+    
     // Body parsers
     this.app.use(express.json({ limit: '10mb' }));
     this.app.use(express.urlencoded({ extended: true, limit: '10mb' }));

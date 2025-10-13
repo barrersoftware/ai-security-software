@@ -49,6 +49,28 @@ module.exports = {
   routes() {
     const router = express.Router();
     
+    // Health check endpoint
+    router.get('/api/security/health', (req, res) => {
+      try {
+        res.json({
+          success: true,
+          status: 'healthy',
+          plugin: 'security',
+          version: '1.0.0',
+          services: {
+            rateLimit: this.rateLimitService ? 'active' : 'inactive',
+            validator: this.validatorService ? 'active' : 'inactive',
+            csrf: this.csrfService ? 'active' : 'inactive',
+            headers: this.headersService ? 'active' : 'inactive',
+            encryption: this.encryptionService ? 'active' : 'inactive'
+          }
+        });
+      } catch (err) {
+        this.logger.error('Health check error:', err);
+        res.status(500).json({ success: false, error: err.message });
+      }
+    });
+    
     // Get CSRF token
     router.get('/api/security/csrf-token', (req, res) => {
       try {
