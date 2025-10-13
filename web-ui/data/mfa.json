@@ -1,1 +1,34 @@
-{}
+{
+  "7b791521-8981-4f08-b498-08ae56685e6d": {
+    "secret": "KRYDIT3HKVLGIQCKHAZXKJLDNA2ESV3MNU6HSVCXIYYHW32ENM4A",
+    "enabled": false,
+    "backupCodes": [
+      "SLF7AYZT",
+      "3LY0TYPV",
+      "5FJ3SXMI",
+      "8J2OGN23",
+      "F47AD4LT",
+      "T1GSB2KT",
+      "2RK99XTL",
+      "IUFWYW8C",
+      "Q8EKI00D",
+      "TUEKO455"
+    ]
+  },
+  "d632f2a6-b768-4c92-ad17-aa66ea276d89": {
+    "secret": "KV3XQSRZGEVGGODNFRWGWOLNMJYXSMZKFA6DQPSFJFSFM2DNJZBA",
+    "enabled": false,
+    "backupCodes": [
+      "LKJSEL4Z",
+      "MOV3V544",
+      "UIJH56UI",
+      "GTJXRL6D",
+      "4OJ59BG4",
+      "RTALQHCO",
+      "BJMJ2OUT",
+      "QS78FKG7",
+      "1T49YM5A",
+      "CYOHQV6G"
+    ]
+  }
+}

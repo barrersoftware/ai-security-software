@@ -49,6 +49,56 @@
       "role": "user",
       "mfaEnabled": false,
       "createdAt": "2025-10-13T16:33:31.216Z"
+    },
+    {
+      "id": "b779de86-785c-4e9b-b3f7-482f08c1d524",
+      "username": "testuser_1760379261",
+      "email": "test_1760379261@example.com",
+      "password": "7f01c544f939b258c9b412b30bbd0ed036df4705647b730d61cfb258965f393819ccbe3f1cbc5b43fed2fdfe8932d337743a3515f209ffd8216a4e704b96d7b6",
+      "salt": "025a93744e965c6e9dda18faf4ecd6e3",
+      "role": "user",
+      "mfaEnabled": false,
+      "createdAt": "2025-10-13T18:14:21.520Z"
+    },
+    {
+      "id": "7b791521-8981-4f08-b498-08ae56685e6d",
+      "username": "testuser_1760379865",
+      "email": "test_1760379865@example.com",
+      "password": "46780a40ef11d1599e970716bbebeec209677118f44acfebe2ea672f36036a03d5cedf57ea01126b64b482331c3322a997d46244ba5d8440ebe591305c39ed15",
+      "salt": "7646e324311f7fb91d65c74321761e4e",
+      "role": "user",
+      "mfaEnabled": false,
+      "createdAt": "2025-10-13T18:24:25.147Z"
+    },
+    {
+      "id": "4ff3e31d-fcd3-49c2-b1a4-e17a7fcb6a92",
+      "username": "user_1760380122",
+      "email": "user@test.com",
+      "password": "08d463b6e3708f61b53c530f155f9915a276b177915dba33199b0a6384aa3a10a4eef91d99f49e628b101fa9470acc4ac2fadf905e1cb6cfb7dad6a98ab1e416",
+      "salt": "89023039a6eda6cf2acd7665acc8bbf8",
+      "role": "user",
+      "mfaEnabled": false,
+      "createdAt": "2025-10-13T18:28:42.264Z"
+    },
+    {
+      "id": "88292826-fd6a-4553-aac7-9b73f886cf07",
+      "username": "testadmin_1760380229",
+      "email": "admin_1760380229@test.com",
+      "password": "03b2f50e8554c1439ff9a0e4b125b6094b341d3aec5eae0dc79c9758364d43d7f54c7217b0db9fa0929e3a2ddf46a144f956ecb34fd8da1706700c8bd6f99dd7",
+      "salt": "07fa1c851db2b853f9353abe5fa4a4ba",
+      "role": "user",
+      "mfaEnabled": false,
+      "createdAt": "2025-10-13T18:30:29.993Z"
+    },
+    {
+      "id": "d632f2a6-b768-4c92-ad17-aa66ea276d89",
+      "username": "testuser_1760380230",
+      "email": "test_1760380230@example.com",
+      "password": "62d5fb2ecb167c4024bab214a71972e6c9e46f91e7cf8d1cd1c48c957e366609068793f1ddfaf59fab68a09749014186af93e71e089c4531ec3b13af1abfaf3e",
+      "salt": "fd5f429ae474d38c641cdaada877be93",
+      "role": "user",
+      "mfaEnabled": false,
+      "createdAt": "2025-10-13T18:30:30.158Z"
     }
   ]
 }

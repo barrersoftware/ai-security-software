@@ -1,14 +1,16 @@
 {
   "blockedIPs": [],
   "failedAttempts": {
+    "::1:admin_1760380122": [
+      {
+        "timestamp": 1760380122376,
+        "ipAddress": "::1",
+        "username": "admin_1760380122"
+      }
+    ],
     "::1:admin": [
       {
-        "timestamp": 1760373155786,
-        "ipAddress": "::1",
-        "username": "admin"
-      },
-      {
-        "timestamp": 1760373166099,
+        "timestamp": 1760380179614,
         "ipAddress": "::1",
         "username": "admin"
       }
