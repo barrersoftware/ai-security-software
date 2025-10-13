@@ -1,0 +1,42 @@
+[
+  {
+    "id": "tenant-ee2514419f4f91018f3da84f4cfa1b2d",
+    "name": "Default Organization",
+    "slug": "default",
+    "status": "active",
+    "settings": {
+      "allowedDomains": [
+        "*"
+      ],
+      "customBranding": {},
+      "features": {
+        "vpn": true,
+        "scanning": true,
+        "storage": true,
+        "admin": true
+      }
+    },
+    "limits": {
+      "users": 1000,
+      "scans": 10000,
+      "storage": "1TB",
+      "vpnClients": 100,
+      "apiRequests": 10000
+    },
+    "usage": {
+      "users": 0,
+      "scans": 0,
+      "storage": "0GB",
+      "vpnClients": 0,
+      "apiRequests": 0
+    },
+    "billing": {
+      "plan": "enterprise",
+      "status": "active",
+      "nextBillingDate": null
+    },
+    "createdAt": "2025-10-13T20:44:01.548Z",
+    "updatedAt": "2025-10-13T20:44:01.548Z",
+    "metadata": {}
+  }
+]

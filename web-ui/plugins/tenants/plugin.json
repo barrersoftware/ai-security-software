@@ -1,0 +1,43 @@
+{
+  "name": "tenants",
+  "version": "1.0.0",
+  "description": "Multi-tenancy support with data isolation and resource management",
+  "author": "AI Security Scanner Team",
+  "main": "index.js",
+  "enabled": true,
+  "priority": 3,
+  "provides": {
+    "services": ["tenant-manager", "tenant-middleware", "resource-limiter", "usage-tracker"],
+    "routes": [
+      "/api/tenants",
+      "/api/tenants/:id",
+      "/api/tenants/:id/stats",
+      "/api/tenants/:id/limits",
+      "/api/tenants/:id/users"
+    ],
+    "middleware": ["extractTenant", "validateTenant", "checkLimits", "trackUsage"]
+  },
+  "requires": {
+    "plugins": ["auth", "admin"],
+    "services": ["logger", "audit-logger", "user-manager"]
+  },
+  "config": {
+    "defaultTenant": {
+      "name": "Default Organization",
+      "slug": "default",
+      "limits": {
+        "users": 1000,
+        "scans": 10000,
+        "storage": "1TB",
+        "vpnClients": 100,
+        "apiRequests": 100000
+      }
+    },
+    "warningThresholds": {
+      "warning": 80,
+      "critical": 95
+    },
+    "usageHistoryLimit": 1000,
+    "persistInterval": 100
+  }
+}
