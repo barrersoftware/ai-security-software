@@ -1,14 +1,34 @@
 {
   "users": [
     {
-      "id": "2176ed25-c647-42d3-82c6-4d9d18ee3d0b",
+      "id": "b01fd024-4db1-4ad6-a875-17a3bb9e8702",
       "username": "admin",
       "email": "admin@localhost",
+      "password": "f2918eb208d81a143574f611470e09acdd18e1d92aba178483550e0c3cc455ad5fb589eaa517ec64770414a28f6af448df5d9d2ddda2d5a09fb5d609f6ca3f5d",
+      "salt": "0907020d93866bd790c4cbe204c2a9d0",
       "role": "admin",
-      "hash": "bd4960590eedbcea86f04ddc9d9b99d845d7ee39f5885809b027c2a86ea173d8a080333b6e754a3cb837629a5f18c456efbecd3cbd817c7a148f5029feecf5a2",
-      "salt": "1506e52c7cf071ab571d39c6b5a36d42",
-      "createdAt": "2025-10-12T21:54:15.980Z",
-      "lastLogin": "2025-10-12T21:54:16.043Z"
+      "mfaEnabled": false,
+      "createdAt": "2025-10-13T07:12:51.977Z"
+    },
+    {
+      "id": "f4db0f88-180d-408f-becd-0b9abd8b533e",
+      "username": "testuser",
+      "email": "test@example.com",
+      "password": "4f32c15d5739d46af8d13f0566709e1969bced9e88a32d4f4c79a04cd4b8da025c08bd15b10a037c91e8b936ffdef1f2dd6c66d754da002918826f7ee498d81c",
+      "salt": "c37588e4df648645534c5f7f357b2cbb",
+      "role": "user",
+      "mfaEnabled": false,
+      "createdAt": "2025-10-13T07:20:54.844Z"
+    },
+    {
+      "id": "8ee60be7-9928-4f64-964e-39a1be6c335a",
+      "username": "&amp;lt;script&amp;gt;alert(&amp;quot;xss&amp;quot",
+      "email": "test@test.com",
+      "password": "c558e9034d37a8165b7793d8235093ffbf9367163e65b84a07f03338ed76877a5b1b75fa543e7e5415ae603bcaef5f50cad17242f597cb2bad152b9ff632c3cb",
+      "salt": "e9861a8d51021ed3b404be64b817893b",
+      "role": "user",
+      "mfaEnabled": false,
+      "createdAt": "2025-10-13T07:20:55.056Z"
     }
   ]
 }

@@ -1,0 +1,29 @@
+{
+  "name": "scanner",
+  "version": "1.0.0",
+  "description": "Security scanning functionality - executes security scan scripts",
+  "author": "AI Security Scanner Team",
+  "main": "index.js",
+  "enabled": true,
+  "priority": 20,
+  "provides": {
+    "services": ["scanner"],
+    "routes": [
+      "/api/scanner/start",
+      "/api/scanner/status",
+      "/api/scanner/code-review",
+      "/api/scanner/malware-scan",
+      "/api/scanner/:scanId",
+      "/api/scanner/:scanId/stop"
+    ]
+  },
+  "requires": {
+    "plugins": [],
+    "services": ["logger", "platform", "broadcast", "integrations"]
+  },
+  "config": {
+    "maxConcurrentScans": 5,
+    "scanTimeout": 3600000,
+    "cleanupDelay": 300000
+  }
+}

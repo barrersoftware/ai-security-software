@@ -1,0 +1,42 @@
+{
+  "name": "security",
+  "version": "1.0.0",
+  "description": "Security hardening - Rate limiting, validation, CSRF, headers, encryption",
+  "author": "AI Security Scanner Team",
+  "main": "index.js",
+  "enabled": true,
+  "priority": 45,
+  "provides": {
+    "services": ["rateLimit", "validator", "csrf", "headers", "encryption"],
+    "middleware": [
+      "rateLimiter",
+      "validateInput",
+      "csrfProtection",
+      "securityHeaders",
+      "sanitizeRequest"
+    ]
+  },
+  "requires": {
+    "plugins": [],
+    "services": ["logger", "config", "integrations"]
+  },
+  "config": {
+    "rateLimit": {
+      "windowMs": 900000,
+      "maxRequests": 100,
+      "loginMaxRequests": 5,
+      "loginWindowMs": 300000
+    },
+    "csrf": {
+      "enabled": true,
+      "cookieName": "_csrf",
+      "headerName": "X-CSRF-Token"
+    },
+    "headers": {
+      "hsts": true,
+      "csp": true,
+      "noSniff": true,
+      "xssProtection": true
+    }
+  }
+}

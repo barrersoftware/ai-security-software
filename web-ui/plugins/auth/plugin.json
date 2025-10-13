@@ -1,0 +1,33 @@
+{
+  "name": "auth",
+  "version": "1.0.0",
+  "description": "Authentication and authorization - Local, MFA, OAuth, LDAP/AD, IDS",
+  "author": "AI Security Scanner Team",
+  "main": "index.js",
+  "enabled": true,
+  "priority": 50,
+  "provides": {
+    "services": ["auth", "mfa", "oauth", "ids", "ldap"],
+    "routes": [
+      "/api/auth/login",
+      "/api/auth/logout",
+      "/api/auth/register",
+      "/api/auth/mfa/*",
+      "/api/auth/oauth/*",
+      "/api/auth/ldap/*",
+      "/api/auth/session"
+    ],
+    "middleware": ["requireAuth", "requireAdmin", "checkMFA"]
+  },
+  "requires": {
+    "plugins": [],
+    "services": ["logger", "platform", "config", "integrations"]
+  },
+  "config": {
+    "sessionTimeout": 86400000,
+    "maxLoginAttempts": 5,
+    "lockoutDuration": 900000,
+    "mfaRequired": false,
+    "bcryptRounds": 10
+  }
+}

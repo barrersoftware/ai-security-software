@@ -1,0 +1,24 @@
+{
+  "name": "system-info",
+  "version": "1.0.0",
+  "description": "System information and health check (test plugin)",
+  "author": "AI Security Scanner Team",
+  "main": "index.js",
+  "enabled": true,
+  "priority": 5,
+  "provides": {
+    "services": ["systemInfo"],
+    "routes": [
+      "/api/system/info",
+      "/api/system/health",
+      "/api/system/platform"
+    ]
+  },
+  "requires": {
+    "plugins": [],
+    "services": ["logger", "platform", "integrations"]
+  },
+  "config": {
+    "healthCheckInterval": 60000
+  }
+}

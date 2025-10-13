@@ -1,11 +1,76 @@
 {
-  "sessions": {
-    "c3556ea1eb54940663f59066d16ee01ab7314d2499c3b2153a4ff96e636cf83b": {
-      "userId": "2176ed25-c647-42d3-82c6-4d9d18ee3d0b",
+  "sessions": [
+    {
+      "token": "21cb87e0c7ee0267056cbf089ac01e1c51a752a1eed3d97b1a6a75a536feb5d9",
+      "userId": "b01fd024-4db1-4ad6-a875-17a3bb9e8702",
       "username": "admin",
       "role": "admin",
-      "createdAt": "2025-10-12T21:54:16.071Z",
-      "expiresAt": "2025-10-13T21:54:16.071Z"
+      "createdAt": "2025-10-13T07:13:10.588Z",
+      "expiresAt": "2025-10-14T07:13:10.588Z"
+    },
+    {
+      "token": "ed410d0eb20b15263e8fe24e59f0596ff74fa65aab1041518bd59b83bead7450",
+      "userId": "b01fd024-4db1-4ad6-a875-17a3bb9e8702",
+      "username": "admin",
+      "role": "admin",
+      "createdAt": "2025-10-13T07:14:52.315Z",
+      "expiresAt": "2025-10-14T07:14:52.315Z"
+    },
+    {
+      "token": "3a03b02b1caaa2027a155e78f057fcd31386443d5744244315d3c55c4f4c1672",
+      "userId": "b01fd024-4db1-4ad6-a875-17a3bb9e8702",
+      "username": "admin",
+      "role": "admin",
+      "createdAt": "2025-10-13T07:20:28.477Z",
+      "expiresAt": "2025-10-14T07:20:28.477Z"
+    },
+    {
+      "token": "000fc8d17b87bf745f0db7ce4b7658fb64c181c348950c8822f2d4acae4d6a4c",
+      "userId": "f4db0f88-180d-408f-becd-0b9abd8b533e",
+      "username": "testuser",
+      "role": "user",
+      "createdAt": "2025-10-13T07:20:54.941Z",
+      "expiresAt": "2025-10-14T07:20:54.941Z"
+    },
+    {
+      "token": "48a330fc7faf91f740899c53ed61479ed07ebc428b671e63fe9be87481988786",
+      "userId": "b01fd024-4db1-4ad6-a875-17a3bb9e8702",
+      "username": "admin",
+      "role": "admin",
+      "createdAt": "2025-10-13T07:25:53.684Z",
+      "expiresAt": "2025-10-14T07:25:53.684Z"
+    },
+    {
+      "token": "87bfdbc9c60b62bbc642f89309648f050aff547d0bcde98aaad0e932789336d4",
+      "userId": "b01fd024-4db1-4ad6-a875-17a3bb9e8702",
+      "username": "admin",
+      "role": "admin",
+      "createdAt": "2025-10-13T07:26:05.693Z",
+      "expiresAt": "2025-10-14T07:26:05.693Z"
+    },
+    {
+      "token": "037a5dba928bab8d640151f2e43b89603aef656e9ddddaa77f6eb9a46613d1db",
+      "userId": "b01fd024-4db1-4ad6-a875-17a3bb9e8702",
+      "username": "admin",
+      "role": "admin",
+      "createdAt": "2025-10-13T07:26:19.591Z",
+      "expiresAt": "2025-10-14T07:26:19.591Z"
+    },
+    {
+      "token": "70313ca84958faa559a72a628643101a027a4e8ad5eff7ec5a78bdd0d0fadca7",
+      "userId": "b01fd024-4db1-4ad6-a875-17a3bb9e8702",
+      "username": "admin",
+      "role": "admin",
+      "createdAt": "2025-10-13T07:26:41.352Z",
+      "expiresAt": "2025-10-14T07:26:41.352Z"
+    },
+    {
+      "token": "c137f17ad35536241e3178e3bf0bca485045e593b0c920b87f09d063c16c7970",
+      "userId": "b01fd024-4db1-4ad6-a875-17a3bb9e8702",
+      "username": "admin",
+      "role": "admin",
+      "createdAt": "2025-10-13T07:28:23.992Z",
+      "expiresAt": "2025-10-14T07:28:23.992Z"
     }
-  }
+  ]
 }
