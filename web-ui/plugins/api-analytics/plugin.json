@@ -1,0 +1,20 @@
+{
+  "name": "api-analytics",
+  "version": "1.0.0",
+  "description": "API request tracking, analytics, and quota enforcement for multi-tenant environments",
+  "author": "AI Security Scanner Team",
+  "priority": 4,
+  "dependencies": ["auth", "tenants"],
+  "services": [
+    "api-tracker",
+    "api-analytics",
+    "api-quota-enforcer"
+  ],
+  "routes": [
+    "/api/analytics/*"
+  ],
+  "middleware": [
+    "trackApiRequest"
+  ],
+  "enabled": true
+}
