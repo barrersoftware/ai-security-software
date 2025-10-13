@@ -1,0 +1,50 @@
+{
+  "name": "vpn",
+  "version": "1.0.0",
+  "description": "VPN Management - WireGuard and OpenVPN integration with client config generation",
+  "author": "AI Security Scanner Team",
+  "main": "index.js",
+  "enabled": true,
+  "priority": 1,
+  "provides": {
+    "services": ["wireguard-manager", "openvpn-manager", "vpn-monitor", "config-generator"],
+    "routes": [
+      "/api/vpn/status",
+      "/api/vpn/wireguard/*",
+      "/api/vpn/openvpn/*",
+      "/api/vpn/clients/*",
+      "/api/vpn/config/*"
+    ],
+    "middleware": []
+  },
+  "requires": {
+    "plugins": ["auth", "admin"],
+    "services": ["logger", "platform", "audit-logger"],
+    "system": ["wireguard-tools", "openvpn"]
+  },
+  "config": {
+    "wireguard": {
+      "enabled": true,
+      "interface": "wg0",
+      "port": 51820,
+      "address": "10.8.0.1/24",
+      "configPath": "/etc/wireguard"
+    },
+    "openvpn": {
+      "enabled": true,
+      "port": 1194,
+      "protocol": "udp",
+      "network": "10.9.0.0/24",
+      "configPath": "/etc/openvpn"
+    },
+    "features": [
+      "Client config generation",
+      "QR code generation (WireGuard)",
+      "Connection monitoring",
+      "Traffic statistics",
+      "Auto-restart on failure",
+      "Multi-client support",
+      "Cross-platform clients"
+    ]
+  }
+}
