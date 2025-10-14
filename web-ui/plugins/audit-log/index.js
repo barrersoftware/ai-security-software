@@ -288,8 +288,44 @@ class AuditLogPlugin {
         });
 
         if (format === 'pdf') {
-          // TODO: Generate PDF report
-          res.status(501).json({ error: 'PDF format not yet implemented' });
+          // Use reporting plugin to generate PDF
+          try {
+            const reportingService = this.services.get('ReportGenerator');
+            if (!reportingService) {
+              throw new Error('Reporting service not available');
+            }
+
+            // Prepare report data
+            const reportData = {
+              name: `Compliance Report - ${standard}`,
+              description: `${standard} compliance report from ${startDate} to ${endDate}`,
+              template: 'compliance_report',
+              format: 'pdf',
+              data: {
+                standard,
+                report,
+                generatedDate: new Date().toISOString(),
+                tenantId,
+                dateRange: { start: startDate, end: endDate }
+              },
+              options: {
+                includeCharts: true,
+                pageSize: 'A4'
+              },
+              generatedBy: req.user.id
+            };
+
+            const result = await reportingService.generateReport(tenantId, reportData);
+            
+            // Return the PDF file
+            const filePath = result.file_path || `reports/${result.id}.pdf`;
+            res.download(filePath, `compliance-report-${standard}-${Date.now()}.pdf`);
+          } catch (error) {
+            this.logger.error('[AuditLog] Error generating PDF report:', error);
+            // Fallback to JSON if PDF generation fails
+            this.logger.warn('[AuditLog] Falling back to JSON format');
+            res.json(report);
+          }
         } else if (format === 'csv') {
           // Convert to CSV
           const csv = this.complianceReporter.toCSV(report);
