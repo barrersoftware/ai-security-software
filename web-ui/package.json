@@ -1,7 +1,7 @@
 {
   "name": "ai-security-scanner-web-ui",
-  "version": "4.6.0",
-  "description": "Web dashboard for AI Security Scanner - Multi-Server Management",
+  "version": "4.6.1",
+  "description": "Web dashboard for AI Security Scanner - Notifications & Alerting",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -34,6 +34,7 @@
     "ldapjs": "^3.0.7",
     "marked": "^16.4.0",
     "node-cron": "^4.2.1",
+    "nodemailer": "^7.0.9",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-microsoft": "^2.1.0",

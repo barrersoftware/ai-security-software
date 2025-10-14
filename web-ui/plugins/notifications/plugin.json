@@ -1,0 +1,49 @@
+{
+  "name": "notifications",
+  "version": "1.0.0",
+  "description": "Real-time notifications and alerting system",
+  "author": "AI Security Scanner Team",
+  "main": "index.js",
+  "enabled": true,
+  "dependencies": [],
+  "permissions": [
+    "notifications:read",
+    "notifications:write",
+    "notifications:send",
+    "alerts:manage"
+  ],
+  "config": {
+    "defaultPriority": "medium",
+    "throttleWindow": 300000,
+    "maxRetries": 3,
+    "retryDelay": 5000
+  },
+  "services": [
+    "NotificationManager",
+    "ChannelManager",
+    "AlertEngine",
+    "TemplateManager",
+    "DeliveryManager"
+  ],
+  "channels": [
+    "slack",
+    "discord",
+    "email",
+    "teams",
+    "webhook"
+  ],
+  "routes": [
+    "POST /api/notifications/channels",
+    "GET /api/notifications/channels",
+    "PUT /api/notifications/channels/:id",
+    "DELETE /api/notifications/channels/:id",
+    "POST /api/notifications/channels/:id/test",
+    "POST /api/notifications/send",
+    "GET /api/notifications",
+    "GET /api/notifications/:id",
+    "POST /api/notifications/rules",
+    "GET /api/notifications/rules",
+    "PUT /api/notifications/rules/:id",
+    "DELETE /api/notifications/rules/:id"
+  ]
+}
