@@ -4,7 +4,7 @@
  */
 
 class APIClient {
-    constructor(baseURL = '') {
+    constructor(baseURL = '/api') {
         this.baseURL = baseURL;
         this.token = localStorage.getItem('token');
     }
