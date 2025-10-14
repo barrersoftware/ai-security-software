@@ -1,0 +1,52 @@
+{
+  "name": "webhooks",
+  "version": "1.0.0",
+  "description": "External system integrations via webhooks",
+  "author": "AI Security Scanner Team",
+  "main": "index.js",
+  "enabled": true,
+  "dependencies": [],
+  "permissions": [
+    "webhooks:read",
+    "webhooks:write",
+    "webhooks:delete",
+    "webhooks:test"
+  ],
+  "config": {
+    "maxRetries": 3,
+    "retryDelay": 5000,
+    "timeout": 30000,
+    "maxPayloadSize": 1048576
+  },
+  "services": [
+    "WebhookManager",
+    "EventDispatcher",
+    "DeliveryManager",
+    "SecurityManager"
+  ],
+  "events": [
+    "scan.started",
+    "scan.completed",
+    "scan.failed",
+    "vulnerability.found",
+    "policy.executed",
+    "policy.passed",
+    "policy.failed",
+    "server.added",
+    "server.removed",
+    "alert.triggered",
+    "notification.sent"
+  ],
+  "routes": [
+    "POST /api/webhooks",
+    "GET /api/webhooks",
+    "GET /api/webhooks/:id",
+    "PUT /api/webhooks/:id",
+    "DELETE /api/webhooks/:id",
+    "POST /api/webhooks/:id/test",
+    "GET /api/webhooks/:id/deliveries",
+    "GET /api/webhooks/:id/deliveries/:deliveryId",
+    "POST /api/webhooks/:id/deliveries/:deliveryId/redeliver",
+    "GET /api/webhooks/events"
+  ]
+}

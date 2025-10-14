@@ -1,7 +1,7 @@
 {
   "name": "ai-security-scanner-web-ui",
-  "version": "4.6.1",
-  "description": "Web dashboard for AI Security Scanner - Notifications & Alerting",
+  "version": "4.6.2",
+  "description": "Web dashboard for AI Security Scanner - Webhooks Integration",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
