@@ -1,0 +1,47 @@
+{
+  "name": "multi-server",
+  "version": "1.0.0",
+  "description": "Multi-server management and distributed scanning",
+  "author": "AI Security Scanner Team",
+  "main": "index.js",
+  "enabled": true,
+  "dependencies": [],
+  "permissions": [
+    "servers:read",
+    "servers:write",
+    "servers:delete",
+    "scans:execute",
+    "reports:read"
+  ],
+  "config": {
+    "maxParallelScans": 4,
+    "sshTimeout": 30,
+    "defaultPort": 22,
+    "reportsDir": "~/security-reports/multi-server"
+  },
+  "services": [
+    "ServerManager",
+    "ScanOrchestrator",
+    "ConnectionManager",
+    "ReportAggregator",
+    "ScheduleManager"
+  ],
+  "routes": [
+    "POST /api/multi-server/servers",
+    "GET /api/multi-server/servers",
+    "GET /api/multi-server/servers/:id",
+    "PUT /api/multi-server/servers/:id",
+    "DELETE /api/multi-server/servers/:id",
+    "POST /api/multi-server/servers/:id/test",
+    "POST /api/multi-server/groups",
+    "GET /api/multi-server/groups",
+    "PUT /api/multi-server/groups/:id",
+    "DELETE /api/multi-server/groups/:id",
+    "POST /api/multi-server/scan",
+    "GET /api/multi-server/scans",
+    "GET /api/multi-server/scans/:id",
+    "DELETE /api/multi-server/scans/:id",
+    "GET /api/multi-server/reports",
+    "GET /api/multi-server/reports/:id"
+  ]
+}
