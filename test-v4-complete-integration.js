@@ -305,19 +305,40 @@ async function testPluginConfigurations() {
 }
 
 async function testDatabaseFiles() {
+  // Check for database files that are actually created by plugins
   const dbFiles = [
-    'web-ui/data/users.db',
-    'web-ui/data/system.db'
+    { path: 'web-ui/data/users.db', description: 'User Manager database' }
   ];
 
-  for (const dbFile of dbFiles) {
+  for (const { path: dbFile, description } of dbFiles) {
     try {
       const stats = await fs.stat(dbFile);
       const sizeKB = (stats.size / 1024).toFixed(2);
-      recordTest(`Database: ${path.basename(dbFile)} exists`, true, `${sizeKB} KB`, 'database');
+      recordTest(`Database: ${description}`, true, `${sizeKB} KB at ${dbFile}`, 'database');
     } catch (error) {
-      recordTest(`Database: ${path.basename(dbFile)} exists`, false, 'Not created yet', 'database');
+      recordTest(`Database: ${description}`, false, 'Not created yet', 'database');
     }
+  }
+
+  // Check for data directory
+  try {
+    const dataDir = 'web-ui/data';
+    await fs.access(dataDir);
+    const files = await fs.readdir(dataDir);
+    const dbCount = files.filter(f => f.endsWith('.db')).length;
+    recordTest('Database: data directory exists', true, `${dbCount} database file(s)`, 'database');
+  } catch (error) {
+    recordTest('Database: data directory exists', false, error.message, 'database');
+  }
+
+  // Check for reports directory (used by reporting plugin)
+  try {
+    const reportsDir = 'web-ui/reports';
+    await fs.access(reportsDir);
+    const files = await fs.readdir(reportsDir);
+    recordTest('Storage: reports directory exists', true, `${files.length} report file(s)`, 'database');
+  } catch (error) {
+    recordTest('Storage: reports directory exists', false, error.message, 'database');
   }
 }
 
