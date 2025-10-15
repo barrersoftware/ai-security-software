@@ -1111,3 +1111,364 @@ body {
 .theme-toggle:hover .theme-icon {
     transform: rotate(180deg);
 }
+
+/* ========================================
+   COMPREHENSIVE DARK MODE OVERRIDES
+   ======================================== */
+
+[data-theme="dark"] {
+    /* Override hardcoded colors */
+}
+
+/* Dark Mode: Stat Cards */
+[data-theme="dark"] .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .stat-card .stat-value {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .stat-card .stat-label {
+    color: var(--text-secondary);
+}
+
+/* Dark Mode: Forms */
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group select,
+[data-theme="dark"] .form-group textarea,
+[data-theme="dark"] .form-control-sm {
+    background: #2a2a2a;
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-group label {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-group input:focus,
+[data-theme="dark"] .form-group select:focus,
+[data-theme="dark"] .form-group textarea:focus {
+    background: #2a2a2a;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.2);
+}
+
+[data-theme="dark"] .form-group input::placeholder,
+[data-theme="dark"] .form-group textarea::placeholder {
+    color: #666;
+}
+
+/* Dark Mode: Tables */
+[data-theme="dark"] .data-table {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .data-table thead {
+    background: #2a2a2a;
+}
+
+[data-theme="dark"] .data-table th {
+    color: var(--text-primary);
+    border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .data-table td {
+    border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .data-table tr:hover {
+    background: #2a2a2a;
+}
+
+/* Dark Mode: Badges */
+[data-theme="dark"] .badge-success {
+    background: #1b5e20;
+    color: #81c784;
+}
+
+[data-theme="dark"] .badge-danger {
+    background: #b71c1c;
+    color: #e57373;
+}
+
+[data-theme="dark"] .badge-warning {
+    background: #e65100;
+    color: #ffb74d;
+}
+
+[data-theme="dark"] .badge-info {
+    background: #01579b;
+    color: #4fc3f7;
+}
+
+[data-theme="dark"] .badge-primary {
+    background: #0d47a1;
+    color: #64b5f6;
+}
+
+[data-theme="dark"] .badge-secondary {
+    background: #424242;
+    color: #bdbdbd;
+}
+
+/* Dark Mode: Items with borders */
+[data-theme="dark"] .scan-item,
+[data-theme="dark"] .health-item,
+[data-theme="dark"] .info-item,
+[data-theme="dark"] .stat-item,
+[data-theme="dark"] .detail-row {
+    border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .scan-item:hover,
+[data-theme="dark"] .report-item:hover {
+    background: #2a2a2a;
+}
+
+/* Dark Mode: Report Items */
+[data-theme="dark"] .report-item {
+    background: #2a2a2a;
+}
+
+/* Dark Mode: Plugin Status */
+[data-theme="dark"] .plugin-status {
+    background: #2a2a2a;
+}
+
+/* Dark Mode: Health Values */
+[data-theme="dark"] .health-value.ok {
+    background: #1b5e20;
+    color: #81c784;
+}
+
+[data-theme="dark"] .health-value.warning {
+    background: #e65100;
+    color: #ffb74d;
+}
+
+/* Dark Mode: VPN Status */
+[data-theme="dark"] .status-disconnected {
+    background: #2a2a2a;
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .status-connected {
+    background: #1b5e20;
+    border-color: #2e7d32;
+}
+
+/* Dark Mode: Progress Bar */
+[data-theme="dark"] .progress-bar {
+    background: #2a2a2a;
+}
+
+/* Dark Mode: Toasts */
+[data-theme="dark"] .toast {
+    background: var(--card-bg);
+    color: var(--text-primary);
+}
+
+/* Dark Mode: Error State */
+[data-theme="dark"] .error-state p {
+    color: var(--text-secondary);
+}
+
+/* Dark Mode: Buttons - ensure proper contrast */
+[data-theme="dark"] .btn-primary:hover {
+    background: #357abd;
+}
+
+[data-theme="dark"] .btn-outline {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+[data-theme="dark"] .btn-outline:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Dark Mode: Text colors */
+[data-theme="dark"] .text-muted,
+[data-theme="dark"] .scan-meta,
+[data-theme="dark"] .report-meta {
+    color: var(--text-secondary);
+}
+
+/* Dark Mode: Select dropdowns */
+[data-theme="dark"] select option {
+    background: #2a2a2a;
+    color: var(--text-primary);
+}
+
+/* Dark Mode: Scrollbars */
+[data-theme="dark"] ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 6px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Dark Mode: Focus outlines */
+[data-theme="dark"] *:focus {
+    outline-color: var(--primary-color);
+}
+
+/* Dark Mode: Links */
+[data-theme="dark"] a {
+    color: var(--primary-color);
+}
+
+[data-theme="dark"] a:hover {
+    color: #64b5f6;
+}
+
+/* Dark Mode: Code blocks (if any) */
+[data-theme="dark"] code,
+[data-theme="dark"] pre {
+    background: #2a2a2a;
+    color: #e0e0e0;
+    border-color: var(--border-color);
+}
+
+/* Dark Mode: Checkboxes and Radio Buttons */
+[data-theme="dark"] input[type="checkbox"],
+[data-theme="dark"] input[type="radio"] {
+    accent-color: var(--primary-color);
+}
+
+/* Dark Mode: Modals (if any exist) */
+[data-theme="dark"] .modal {
+    background: var(--card-bg);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .modal-overlay {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+/* Dark Mode: Dropdowns */
+[data-theme="dark"] .dropdown-menu,
+[data-theme="dark"] .user-dropdown {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .dropdown-menu a,
+[data-theme="dark"] .user-dropdown a {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .dropdown-menu a:hover,
+[data-theme="dark"] .user-dropdown a:hover {
+    background: #2a2a2a;
+}
+
+/* Dark Mode: Menu Items */
+[data-theme="dark"] .menu-item {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .menu-item:hover {
+    background: #2a2a2a;
+}
+
+[data-theme="dark"] .menu-item.active {
+    background: #2a2a2a;
+    border-left-color: var(--primary-color);
+}
+
+/* Dark Mode: Section Headers */
+[data-theme="dark"] .menu-section-header {
+    color: var(--text-secondary);
+}
+
+/* Dark Mode: Search */
+[data-theme="dark"] .search-bar input {
+    background: #2a2a2a;
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .search-bar input::placeholder {
+    color: #666;
+}
+
+/* Dark Mode: Notifications */
+[data-theme="dark"] .notification-btn {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .notification-badge {
+    background: var(--danger-color);
+    color: white;
+}
+
+/* Dark Mode: Connection Status */
+[data-theme="dark"] .connection-status {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .status-dot {
+    background: #4caf50;
+}
+
+[data-theme="dark"] .status-dot.disconnected {
+    background: #f44336;
+}
+
+/* Dark Mode: Content Header */
+[data-theme="dark"] .content-header h2 {
+    color: var(--text-primary);
+}
+
+/* Dark Mode: Stats Grid */
+[data-theme="dark"] .stats-grid {
+    color: var(--text-primary);
+}
+
+/* Dark Mode: Ensure all text is readable */
+[data-theme="dark"] h1, 
+[data-theme="dark"] h2, 
+[data-theme="dark"] h3, 
+[data-theme="dark"] h4, 
+[data-theme="dark"] h5, 
+[data-theme="dark"] h6 {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] p,
+[data-theme="dark"] span,
+[data-theme="dark"] div {
+    color: inherit;
+}
+
+/* Dark Mode: Disabled states */
+[data-theme="dark"] button:disabled,
+[data-theme="dark"] input:disabled,
+[data-theme="dark"] select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Dark Mode: Loading states */
+[data-theme="dark"] .loading,
+[data-theme="dark"] .spinner {
+    border-color: var(--border-color);
+    border-top-color: var(--primary-color);
+}
+
