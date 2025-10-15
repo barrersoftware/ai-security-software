@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>API Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #00ff00; }
+        .result { margin: 10px 0; padding: 10px; background: #000; border: 1px solid #00ff00; }
+        .error { border-color: #ff0000; color: #ff0000; }
+        .success { border-color: #00ff00; }
+        button { background: #00ff00; color: #000; border: none; padding: 10px 20px; cursor: pointer; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 API Connection Test</h1>
+    
+    <button onclick="testAPI('/api/stats')">Test /api/stats</button>
+    <button onclick="testAPI('/api/ping')">Test /api/ping</button>
+    <button onclick="testFetch()">Test Raw Fetch</button>
+    <button onclick="clearResults()">Clear</button>
+    
+    <div id="results"></div>
+
+    <script>
+        const resultsDiv = document.getElementById('results');
+        
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+        }
+        
+        function addResult(message, isError = false) {
+            const div = document.createElement('div');
+            div.className = 'result ' + (isError ? 'error' : 'success');
+            div.textContent = new Date().toLocaleTimeString() + ' - ' + message;
+            resultsDiv.appendChild(div);
+        }
+        
+        async function testAPI(endpoint) {
+            addResult('Testing: ' + endpoint);
+            
+            try {
+                const response = await fetch(endpoint);
+                addResult('Response status: ' + response.status);
+                addResult('Response ok: ' + response.ok);
+                addResult('Content-Type: ' + response.headers.get('content-type'));
+                
+                const text = await response.text();
+                addResult('Response text: ' + text.substring(0, 200));
+                
+                try {
+                    const data = JSON.parse(text);
+                    addResult('✅ JSON parsed successfully: ' + JSON.stringify(data));
+                } catch (e) {
+                    addResult('❌ JSON parse failed: ' + e.message, true);
+                }
+                
+            } catch (error) {
+                addResult('❌ Fetch error: ' + error.name + ' - ' + error.message, true);
+                addResult('❌ Error stack: ' + error.stack, true);
+            }
+        }
+        
+        async function testFetch() {
+            addResult('Testing raw fetch with full URL');
+            
+            const urls = [
+                '/api/stats',
+                'http://54.37.254.74:8081/api/stats',
+                'http://54.37.254.74:3001/api/stats'
+            ];
+            
+            for (const url of urls) {
+                try {
+                    addResult('Trying: ' + url);
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    addResult('✅ ' + url + ' worked! ' + JSON.stringify(data));
+                } catch (error) {
+                    addResult('❌ ' + url + ' failed: ' + error.message, true);
+                }
+            }
+        }
+        
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            addResult('Page loaded - ready to test');
+            addResult('Current URL: ' + window.location.href);
+            addResult('Origin: ' + window.location.origin);
+        });
+    </script>
+</body>
+</html>
