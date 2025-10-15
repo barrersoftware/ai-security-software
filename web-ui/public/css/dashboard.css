@@ -1579,4 +1579,112 @@ body {
     background: #2a2a2a;
 }
 
+/* Dark Mode: Hamburger Menu Icon - CRITICAL FIX */
+[data-theme="dark"] .menu-toggle span {
+    background: var(--text-primary);
+}
+
+[data-theme="dark"] .menu-toggle:hover span {
+    background: var(--primary-color);
+}
+
+/* Dark Mode: Logo text */
+[data-theme="dark"] .logo {
+    color: var(--text-primary);
+}
+
+/* Dark Mode: Dashboard/Overview Content */
+[data-theme="dark"] .dashboard-content,
+[data-theme="dark"] .overview-section,
+[data-theme="dark"] .content-section {
+    background: transparent;
+}
+
+/* Dark Mode: Dashboard Tables - All possible selectors */
+[data-theme="dark"] .dashboard-content table,
+[data-theme="dark"] .dashboard-grid table,
+[data-theme="dark"] .overview-content table,
+[data-theme="dark"] .stats-section table,
+[data-theme="dark"] #dashboard table,
+[data-theme="dark"] #overview table {
+    background: var(--card-bg);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .dashboard-content table thead,
+[data-theme="dark"] .dashboard-grid table thead,
+[data-theme="dark"] .overview-content table thead,
+[data-theme="dark"] #dashboard table thead,
+[data-theme="dark"] #overview table thead {
+    background: #2a2a2a;
+}
+
+[data-theme="dark"] .dashboard-content table th,
+[data-theme="dark"] .dashboard-grid table th,
+[data-theme="dark"] .overview-content table th,
+[data-theme="dark"] #dashboard table th,
+[data-theme="dark"] #overview table th {
+    background: #2a2a2a;
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .dashboard-content table td,
+[data-theme="dark"] .dashboard-grid table td,
+[data-theme="dark"] .overview-content table td,
+[data-theme="dark"] #dashboard table td,
+[data-theme="dark"] #overview table td {
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .dashboard-content table tr:hover,
+[data-theme="dark"] .dashboard-grid table tr:hover,
+[data-theme="dark"] .overview-content table tr:hover,
+[data-theme="dark"] #dashboard table tr:hover,
+[data-theme="dark"] #overview table tr:hover {
+    background: #2a2a2a;
+}
+
+/* Dark Mode: User avatar and name */
+[data-theme="dark"] .user-name {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .user-btn {
+    color: var(--text-primary);
+}
+
+/* Dark Mode: Notification button */
+[data-theme="dark"] .notification-btn {
+    color: var(--text-primary);
+}
+
+/* Dark Mode: Search icon */
+[data-theme="dark"] .search-icon {
+    color: var(--text-secondary);
+}
+
+/* Dark Mode: Any remaining hardcoded backgrounds */
+[data-theme="dark"] .dashboard-grid > div,
+[data-theme="dark"] .stats-container > div {
+    background: var(--card-bg);
+}
+
+/* Dark Mode: Ensure text in all content areas is readable */
+[data-theme="dark"] .main-content p,
+[data-theme="dark"] .main-content span,
+[data-theme="dark"] .main-content div,
+[data-theme="dark"] #mainContent p,
+[data-theme="dark"] #mainContent span,
+[data-theme="dark"] #mainContent div {
+    color: var(--text-primary);
+}
+
+/* Dark Mode: Strong/Bold text */
+[data-theme="dark"] strong,
+[data-theme="dark"] b {
+    color: var(--text-primary);
+}
+
 
