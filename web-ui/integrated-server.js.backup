@@ -457,15 +457,6 @@ app.get('/api/plugins', (req, res) => {
 });
 
 // Plugin status
-// ===== AI CHAT ROUTES =====
-try {
-    const chatRoutes = require('./routes/chat');
-    app.use('/api/chat', chatRoutes);
-    console.log('✅ AI Chat routes loaded (Ollama LLM)');
-} catch (error) {
-    console.warn('⚠️  AI Chat routes not available:', error.message);
-}
-
 app.get('/api/:plugin/status', (req, res) => {
     const plugin = plugins[req.params.plugin];
     if (plugin) {
@@ -513,6 +504,15 @@ function formatUptime(seconds) {
     }
 }
 
+// ===== AI CHAT ROUTES =====
+// Load chat routes for AI Assistant with Ollama integration
+try {
+    const chatRoutes = require('./routes/chat');
+    app.use('/api/chat', chatRoutes);
+    console.log('✅ AI Chat routes loaded (Ollama LLM)');
+} catch (error) {
+    console.warn('⚠️  AI Chat routes not available:', error.message);
+}
 
 // Error handling
 app.use((err, req, res, next) => {
