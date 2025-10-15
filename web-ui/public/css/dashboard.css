@@ -172,12 +172,60 @@ body {
     animation: pulse 2s infinite;
 }
 
+/* API Status Indicator */
+.api-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--light-color);
+    border-radius: 20px;
+    font-size: 13px;
+    transition: all 0.3s ease;
+}
+
+.api-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--secondary-color);
+    transition: background-color 0.3s ease;
+}
+
+.api-status.checking .api-dot {
+    background: var(--warning-color);
+    animation: pulse 2s infinite;
+}
+
+.api-status.online .api-dot {
+    background: var(--success-color);
+    animation: pulse 2s infinite;
+}
+
+.api-status.error .api-dot {
+    background: var(--danger-color);
+    animation: pulse-fast 1s infinite;
+}
+
+.api-status.degraded .api-dot {
+    background: var(--warning-color);
+}
+
 @keyframes pulse {
     0%, 100% {
         opacity: 1;
     }
     50% {
         opacity: 0.5;
+    }
+}
+
+@keyframes pulse-fast {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.3;
     }
 }
 

@@ -876,3 +876,14 @@ app.get('/api/analytics/dashboard', (req, res) => {
 
 console.log('✅ Extended API endpoints loaded');
 
+// Simple database-based authentication
+const simpleAuth = require('./routes/simple-auth');
+app.use(simpleAuth);
+console.log('✅ Simple auth routes loaded');
+
+// Start the server
+start().catch(err => {
+    console.error('Failed to start server:', err);
+    process.exit(1);
+});
+

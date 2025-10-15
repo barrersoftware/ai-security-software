@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Debug - Real-time</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #00ff00; }
+        .test { margin: 20px 0; padding: 15px; background: #000; border: 1px solid #00ff00; }
+        .pass { border-color: #00ff00; }
+        .fail { border-color: #ff0000; color: #ff0000; }
+        button { background: #00ff00; color: #000; border: none; padding: 10px 20px; cursor: pointer; margin: 5px; }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <h1>🔍 API Debug - Exact Dashboard Test</h1>
+    <p>This page uses THE EXACT SAME CODE as dashboard.js to test API connectivity</p>
+    
+    <button onclick="runTests()">▶️ Run All Tests</button>
+    <button onclick="clearResults()">🗑️ Clear</button>
+    <button onclick="testDashboardCode()">🎯 Test Dashboard Code</button>
+    
+    <div id="results"></div>
+
+    <script>
+        const API_BASE_URL = '';
+        const resultsDiv = document.getElementById('results');
+        
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+        }
+        
+        function addTest(title, status, details) {
+            const div = document.createElement('div');
+            div.className = 'test ' + (status ? 'pass' : 'fail');
+            div.innerHTML = `
+                <strong>${status ? '✅' : '❌'} ${title}</strong>
+                <pre>${details}</pre>
+            `;
+            resultsDiv.appendChild(div);
+        }
+        
+        // THIS IS THE EXACT fetchAPI function from dashboard.js
+        async function fetchAPI(endpoint, options = {}) {
+            try {
+                const url = API_BASE_URL + endpoint;
+                console.log('🌐 Fetching:', url);
+                console.log('🔍 Full URL:', window.location.origin + url);
+                
+                const response = await fetch(url, {
+                    ...options,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    }
+                });
+
+                console.log('✅ Response status:', response.status, response.ok);
+                console.log('📋 Response headers:', response.headers.get('content-type'));
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    console.error('❌ Response error body:', text);
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('❌ Non-JSON response:', text.substring(0, 200));
+                    throw new Error('Response is not JSON');
+                }
+
+                const data = await response.json();
+                console.log('📦 Real data received:', data);
+                return data;
+            } catch (error) {
+                console.error('❌ API Error:', error);
+                throw error; // Don't use mock data in debug page
+            }
+        }
+        
+        async function testDashboardCode() {
+            clearResults();
+            addTest('Testing with Dashboard fetchAPI()', true, 'Starting test...');
+            
+            try {
+                const stats = await fetchAPI('/api/stats');
+                
+                if (stats.totalScans === 999) {
+                    addTest('Stats Data', false, 'Got MOCK data! This means API failed.\n' + JSON.stringify(stats, null, 2));
+                } else {
+                    addTest('Stats Data', true, 'Got REAL data!\n' + JSON.stringify(stats, null, 2));
+                }
+            } catch (error) {
+                addTest('fetchAPI() Error', false, `${error.name}: ${error.message}\n${error.stack}`);
+            }
+        }
+        
+        async function runTests() {
+            clearResults();
+            
+            // Test 1: Basic fetch
+            try {
+                addTest('Test 1: Basic Fetch', true, 'Fetching /api/stats...');
+                const response = await fetch('/api/stats');
+                addTest('Response Status', response.ok, `Status: ${response.status} ${response.statusText}`);
+                
+                const contentType = response.headers.get('content-type');
+                addTest('Content-Type', contentType && contentType.includes('json'), `Content-Type: ${contentType}`);
+                
+                const data = await response.json();
+                addTest('JSON Parse', true, `Data:\n${JSON.stringify(data, null, 2)}`);
+                
+                if (data.totalScans === 999) {
+                    addTest('Data Validation', false, 'This is MOCK data (999 values)');
+                } else {
+                    addTest('Data Validation', true, 'This is REAL data from API');
+                }
+            } catch (error) {
+                addTest('Basic Fetch Failed', false, `${error.name}: ${error.message}`);
+            }
+            
+            // Test 2: Other endpoints
+            const endpoints = ['/api/ping', '/api/system/info', '/api/scans/recent'];
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(endpoint);
+                    const data = await response.json();
+                    addTest(`Endpoint ${endpoint}`, response.ok, `Status: ${response.status}\n${JSON.stringify(data, null, 2).substring(0, 200)}`);
+                } catch (error) {
+                    addTest(`Endpoint ${endpoint}`, false, error.message);
+                }
+            }
+            
+            // Test 3: Dashboard-style fetch
+            await testDashboardCode();
+        }
+        
+        // Auto-run on load
+        window.addEventListener('load', () => {
+            addTest('Page Info', true, `URL: ${window.location.href}\nOrigin: ${window.location.origin}\nAPI Base: "${API_BASE_URL}"`);
+        });
+    </script>
+</body>
+</html>

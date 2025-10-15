@@ -6,6 +6,7 @@
 // API Configuration
 // Using relative URLs - nginx on port 8081 will proxy /api/ to port 3001
 const API_BASE_URL = '';
+const DASHBOARD_VERSION = '1760511605'; // Updated: 1.5s delay + delayed error banner
 
 // Global state
 const state = {
@@ -13,23 +14,33 @@ const state = {
     currentPlugin: null,
     user: null,
     menuCollapsed: false,
-    notifications: []
+    notifications: [],
+    errorBannerTimeout: null // Track banner timeout to prevent flashing
 };
 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Dashboard initializing...');
+    console.log('📌 Dashboard Version:', DASHBOARD_VERSION);
+    
+    // Check if using cached version
+    const urlParams = new URLSearchParams(window.location.search);
+    if (!urlParams.has('fresh') && !urlParams.has('nocache')) {
+        console.warn('⚠️  Dashboard loaded without cache-busting parameters!');
+        console.warn('💡 If seeing mock data, visit: /dashboard-fresh.html');
+    }
+    
     initializeUI();
     initializeDarkMode();
     loadUserInfo();
     setupEventListeners();
     
-    // Give backend a moment to be ready
+    // Give backend more time to be ready - increased to eliminate initial retry flash
     setTimeout(() => {
         console.log('📊 Loading overview...');
         loadView('overview');
         startConnectionMonitor();
-    }, 500);
+    }, 1500); // Increased to 1.5 seconds for smoother load
 });
 
 // Initialize dark mode
@@ -68,6 +79,9 @@ function setTheme(theme) {
 function initializeUI() {
     // Set initial connection status
     updateConnectionStatus(true);
+    
+    // Set initial API status
+    updateAPIStatus('checking', 'Checking...');
     
     // Initialize notification count
     updateNotificationCount(0);
@@ -728,86 +742,162 @@ function showPluginDetails(plugin) {
 }
 
 // API Helper Functions
-async function fetchAPI(endpoint, options = {}) {
-    try {
-        // Construct full URL with API base
-        const url = API_BASE_URL + endpoint;
-        console.log('🌐 Fetching:', url);
-        console.log('🔍 Full URL:', window.location.origin + url);
-        
-        const response = await fetch(url, {
-            ...options,
-            headers: {
-                'Content-Type': 'application/json',
-                ...options.headers
+async function fetchAPI(endpoint, options = {}, retries = 2) {
+    let lastError = null;
+    const startTime = Date.now();
+    
+    for (let attempt = 0; attempt <= retries; attempt++) {
+        try {
+            // Construct full URL with API base
+            const url = API_BASE_URL + endpoint;
+            
+            if (attempt > 0) {
+                console.log(`🔄 Retry attempt ${attempt} for: ${url}`);
+                updateAPIStatus('degraded', `API: Retry ${attempt}/${retries}`);
+                // Small delay before retry
+                await new Promise(resolve => setTimeout(resolve, 300 * attempt));
+            } else {
+                console.log('🌐 Fetching:', url);
             }
-        });
+            
+            const response = await fetch(url, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            });
 
-        console.log('✅ Response status:', response.status, response.ok);
-        console.log('📋 Response headers:', response.headers.get('content-type'));
+            console.log('✅ Response status:', response.status, response.ok);
 
-        if (!response.ok) {
-            const text = await response.text();
-            console.error('❌ Response error body:', text);
-            throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                const text = await response.text();
+                console.error('❌ Response error body:', text);
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await response.text();
+                console.error('❌ Non-JSON response:', text.substring(0, 200));
+                throw new Error('Response is not JSON');
+            }
+
+            const data = await response.json();
+            const responseTime = Date.now() - startTime;
+            console.log('📦 Real data received:', data);
+            console.log(`⚡ Response time: ${responseTime}ms`);
+            
+            // Update API status based on response time
+            if (responseTime > 2000) {
+                updateAPIStatus('degraded', `API: Slow (${responseTime}ms)`);
+            } else if (attempt > 0) {
+                updateAPIStatus('online', 'API: Recovered');
+            } else {
+                updateAPIStatus('online', 'API: Online');
+            }
+            
+            // Cancel and remove error banner (API is working now)
+            cancelAPIErrorBanner();
+            console.log('✅ API connection working');
+            
+            return data;
+        } catch (error) {
+            lastError = error;
+            console.error(`❌ API Error (attempt ${attempt + 1}/${retries + 1}):`, error.message);
+            
+            // Don't retry on certain errors
+            if (error.message.includes('not JSON') || error.message.includes('404')) {
+                break;
+            }
         }
+    }
+    
+    // All retries failed
+    console.error('❌ All API attempts failed:', lastError);
+    console.warn('⚠️  Using mock data for:', endpoint);
+    
+    // Update API status to error
+    updateAPIStatus('error', 'API: Offline');
+    
+    // Show persistent error banner only after all retries fail
+    showAPIErrorBanner();
+    
+    // Return mock data for development
+    return getMockData(endpoint);
+}
 
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-            const text = await response.text();
-            console.error('❌ Non-JSON response:', text.substring(0, 200));
-            throw new Error('Response is not JSON');
-        }
+function showAPIErrorBanner() {
+    // Clear any existing timeout
+    if (state.errorBannerTimeout) {
+        clearTimeout(state.errorBannerTimeout);
+        state.errorBannerTimeout = null;
+    }
+    
+    // Only show banner after 2 seconds of persistent error
+    // This prevents flashing during brief retries
+    state.errorBannerTimeout = setTimeout(() => {
+        // Check if banner already exists
+        if (document.getElementById('api-error-banner')) return;
+        
+        const banner = document.createElement('div');
+        banner.id = 'api-error-banner';
+        banner.style.cssText = 'background: #ff4444; color: white; padding: 15px; margin: 10px; border-radius: 8px; position: fixed; top: 70px; right: 10px; z-index: 9999; max-width: 400px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);';
+        banner.innerHTML = `
+            <strong>⚠️ API Connection Failed</strong><br>
+            <small>Dashboard is showing MOCK DATA. Real API should be at: ${window.location.origin}/api/stats</small><br>
+            <small>Check browser console for detailed error messages.</small>
+            <button onclick="location.reload()" style="background: white; color: #ff4444; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-top: 10px; margin-right: 5px;">🔄 Reload</button>
+            <button onclick="this.parentElement.remove()" style="background: rgba(255,255,255,0.3); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-top: 10px;">✕ Dismiss</button>
+        `;
+        document.body.appendChild(banner);
+    }, 2000); // Wait 2 seconds before showing banner
+}
 
-        const data = await response.json();
-        console.log('📦 Real data received:', data);
-        return data;
-    } catch (error) {
-        console.error('❌ API Error:', error);
-        console.error('❌ Error name:', error.name);
-        console.error('❌ Error message:', error.message);
-        console.warn('⚠️  API Connection failed. Using mock data for:', endpoint);
-        console.warn('⚠️  Expected API at:', API_BASE_URL);
-        // Return mock data for development
-        return getMockData(endpoint);
+function cancelAPIErrorBanner() {
+    // Cancel pending banner display
+    if (state.errorBannerTimeout) {
+        clearTimeout(state.errorBannerTimeout);
+        state.errorBannerTimeout = null;
+    }
+    
+    // Remove existing banner if any
+    const errorBanner = document.getElementById('api-error-banner');
+    if (errorBanner) {
+        errorBanner.remove();
     }
 }
 
 // Mock data for development (FALLBACK ONLY)
 function getMockData(endpoint) {
     console.warn('🔴 USING MOCK DATA FOR:', endpoint);
-    
-    // Show error message in UI
-    const container = document.querySelector('.main-content');
-    if (container && !document.getElementById('api-error-banner')) {
-        const banner = document.createElement('div');
-        banner.id = 'api-error-banner';
-        banner.style.cssText = 'background: #ff4444; color: white; padding: 15px; margin: 10px; border-radius: 8px; position: fixed; top: 10px; right: 10px; z-index: 9999; max-width: 300px;';
-        banner.innerHTML = `
-            <strong>⚠️ API Connection Failed</strong><br>
-            <small>Using mock data. Check backend at http://s1.pepperbacks.xyz:8081/api/stats</small>
-            <button onclick="this.parentElement.remove()" style="float:right; background: white; color: #ff4444; border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer; margin-left: 10px;">✕</button>
-        `;
-        document.body.appendChild(banner);
-    }
+    console.warn('🔴 THIS SHOULD NOT HAPPEN IF API IS WORKING!');
     
     const mockData = {
         '/api/stats': {
-            totalScans: 999,  // Changed to make it obvious this is mock
+            totalScans: 999,  // Obviously fake - indicates API failure
             totalUsers: 999,
             alerts: 999,
-            reports: 999
+            reports: 999,
+            _isMockData: true
         },
         '/api/scans/recent': [],
         '/api/system/health': {
             cpu: 99,
             memory: 99,
             disk: 99,
-            uptime: 'MOCK DATA'
+            uptime: 'MOCK DATA',
+            _isMockData: true
+        },
+        '/api/system/info': {
+            version: 'v4.10.1',
+            platform: 'Unknown',
+            hostname: 'Mock Server',
+            _isMockData: true
         }
     };
 
-    return mockData[endpoint] || {};
+    return mockData[endpoint] || { _isMockData: true, error: 'No mock data for this endpoint' };
 }
 
 // UI Helper Functions
@@ -825,6 +915,40 @@ function updateConnectionStatus(connected) {
             text.textContent = 'Disconnected';
         }
     }
+}
+
+function updateAPIStatus(status, message = null) {
+    const apiStatusEl = document.getElementById('apiStatus');
+    if (!apiStatusEl) return;
+    
+    const dot = apiStatusEl.querySelector('.api-dot');
+    const text = apiStatusEl.querySelector('.api-text');
+    
+    // Remove all status classes
+    apiStatusEl.classList.remove('checking', 'online', 'error', 'degraded');
+    
+    // Add new status class
+    apiStatusEl.classList.add(status);
+    
+    // Update text
+    const messages = {
+        'checking': 'API: Checking...',
+        'online': 'API: Online',
+        'error': 'API: Offline',
+        'degraded': 'API: Degraded'
+    };
+    
+    text.textContent = message || messages[status] || 'API: Unknown';
+    
+    // Update tooltip
+    const tooltips = {
+        'checking': 'Connecting to backend API...',
+        'online': 'Backend API is responding normally',
+        'error': 'Backend API is not responding',
+        'degraded': 'Backend API is slow or unstable'
+    };
+    
+    apiStatusEl.setAttribute('title', tooltips[status] || 'API Status');
 }
 
 function updateNotificationCount(count) {
@@ -873,12 +997,43 @@ function handleSearch(e) {
 }
 
 function startConnectionMonitor() {
-    // Check connection every 30 seconds
-    setInterval(() => {
-        fetch('/api/ping')
-            .then(() => updateConnectionStatus(true))
-            .catch(() => updateConnectionStatus(false));
+    // Check connection and API status every 30 seconds
+    setInterval(async () => {
+        try {
+            const startTime = Date.now();
+            const response = await fetch('/api/ping');
+            const responseTime = Date.now() - startTime;
+            
+            if (response.ok) {
+                updateConnectionStatus(true);
+                
+                // Update API status based on response time
+                if (responseTime > 2000) {
+                    updateAPIStatus('degraded', `API: Slow (${responseTime}ms)`);
+                } else {
+                    updateAPIStatus('online', 'API: Online');
+                }
+            } else {
+                updateConnectionStatus(false);
+                updateAPIStatus('error', 'API: Error');
+            }
+        } catch (error) {
+            updateConnectionStatus(false);
+            updateAPIStatus('error', 'API: Offline');
+        }
     }, 30000);
+    
+    // Initial check after 2 seconds
+    setTimeout(async () => {
+        try {
+            const response = await fetch('/api/ping');
+            if (response.ok) {
+                updateAPIStatus('online', 'API: Online');
+            }
+        } catch (error) {
+            updateAPIStatus('error', 'API: Offline');
+        }
+    }, 2000);
 }
 
 // Utility functions

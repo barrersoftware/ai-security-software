@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>AI Security Scanner - Dashboard</title>
-    <link rel="stylesheet" href="/css/dashboard.css?v=20251015061926">
+    <link rel="stylesheet" href="/css/dashboard.css?v=1760511605">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
 </head>
 <body>
@@ -34,6 +34,10 @@
             <div class="connection-status" id="connectionStatus">
                 <span class="status-dot"></span>
                 <span class="status-text">Connected</span>
+            </div>
+            <div class="api-status" id="apiStatus" title="Backend API Status">
+                <span class="api-dot"></span>
+                <span class="api-text">API: Checking...</span>
             </div>
             <div class="notifications" id="notifications">
                 <button class="notification-btn">
@@ -253,8 +257,16 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- Scripts -->
-    <script src="/js/dashboard.js?v=20251015061926"></script>
-    <script src="/js/api-client.js?v=20251015061926"></script>
-    <!-- <script src="/js/views.js?v=20251015061926"></script>
+    <script>
+        // Force clear cache on load
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                for (let name of names) caches.delete(name);
+            });
+        }
+    </script>
+    <script src="/js/dashboard.js?v=1760511605&bustcache=true"></script>
+    <script src="/js/api-client.js?v=1760511605"></script>
+    <!-- <script src="/js/views.js?v=1760510421"></script>
 </body>
 </html>

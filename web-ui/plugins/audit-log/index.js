@@ -40,20 +40,22 @@ class AuditLogPlugin {
     this.auditLogger = new AuditLogger(this.db, this.logger);
     this.auditQuery = new AuditQuery(this.db, this.logger);
     this.complianceReporter = new ComplianceReporter(this.db, this.logger);
-    this.securityMonitor = new SecurityMonitor(this.db, this.logger, this.auditLogger);
+    // TEMPORARY: Disabled security monitor due to DB issues
+    // this.securityMonitor = new SecurityMonitor(this.db, this.logger, this.auditLogger);
     this.auditMiddleware = new AuditMiddleware(this.auditLogger, this.logger);
 
     await this.auditLogger.init();
-    await this.securityMonitor.init();
+    // TEMPORARY: Disabled security monitor
+    // await this.securityMonitor.init();
 
     // Register services
     context.services.register('AuditLogger', this.auditLogger);
     context.services.register('AuditQuery', this.auditQuery);
     context.services.register('ComplianceReporter', this.complianceReporter);
-    context.services.register('SecurityMonitor', this.securityMonitor);
+    // context.services.register('SecurityMonitor', this.securityMonitor);
     context.services.register('AuditMiddleware', this.auditMiddleware);
 
-    this.logger.info('[AuditLog] ✅ Enhanced Audit Logging plugin initialized');
+    this.logger.info('[AuditLog] ✅ Enhanced Audit Logging plugin initialized (SecurityMonitor temporarily disabled)');
     this.logger.info('[AuditLog] 📡 Global audit middleware available via middleware()');
     
     return true;
