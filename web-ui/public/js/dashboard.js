@@ -18,12 +18,18 @@ const state = {
 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Dashboard initializing...');
     initializeUI();
     initializeDarkMode();
     loadUserInfo();
     setupEventListeners();
-    loadView('overview');
-    startConnectionMonitor();
+    
+    // Give backend a moment to be ready
+    setTimeout(() => {
+        console.log('📊 Loading overview...');
+        loadView('overview');
+        startConnectionMonitor();
+    }, 500);
 });
 
 // Initialize dark mode
@@ -206,8 +212,10 @@ async function getViewContent(view, plugin) {
 // Load overview content
 async function loadOverviewContent() {
     try {
+        console.log('📊 loadOverviewContent: Fetching stats...');
         // Fetch system stats
         const stats = await fetchAPI('/api/stats');
+        console.log('✅ loadOverviewContent: Got stats:', stats);
         
         return `
             <div class="grid-4">
