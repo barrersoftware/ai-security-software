@@ -51,6 +51,45 @@ class APIClient {
         window.location.href = '/login.html';
     }
 
+    // HTTP convenience methods
+    async get(endpoint, options = {}) {
+        return await this.request(endpoint, {
+            ...options,
+            method: 'GET'
+        });
+    }
+
+    async post(endpoint, data, options = {}) {
+        return await this.request(endpoint, {
+            ...options,
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    }
+
+    async put(endpoint, data, options = {}) {
+        return await this.request(endpoint, {
+            ...options,
+            method: 'PUT',
+            body: JSON.stringify(data)
+        });
+    }
+
+    async delete(endpoint, options = {}) {
+        return await this.request(endpoint, {
+            ...options,
+            method: 'DELETE'
+        });
+    }
+
+    async patch(endpoint, data, options = {}) {
+        return await this.request(endpoint, {
+            ...options,
+            method: 'PATCH',
+            body: JSON.stringify(data)
+        });
+    }
+
     // ===== Authentication Plugin =====
     async login(username, password) {
         const response = await this.request('/api/auth/login', {
