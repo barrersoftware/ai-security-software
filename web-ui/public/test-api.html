@@ -20,7 +20,9 @@
     
     <button onclick="testAPI('/api/stats')">Test /api/stats</button>
     <button onclick="testAPI('/api/ping')">Test /api/ping</button>
+    <button onclick="testAPI('/api/system/info')">Test /api/system/info</button>
     <button onclick="testFetch()">Test Raw Fetch</button>
+    <button onclick="testDashboardFetch()">Test Like Dashboard</button>
     <button onclick="clearResults()">Clear</button>
     
     <div id="results"></div>
@@ -82,6 +84,47 @@
                 } catch (error) {
                     addResult('❌ ' + url + ' failed: ' + error.message, true);
                 }
+            }
+        }
+        
+        // Test exactly like dashboard.js does
+        async function testDashboardFetch() {
+            addResult('Testing EXACTLY like dashboard.js');
+            
+            const API_BASE_URL = '';
+            const endpoint = '/api/stats';
+            
+            try {
+                const url = API_BASE_URL + endpoint;
+                addResult('URL: ' + url);
+                addResult('Full URL: ' + window.location.origin + url);
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                addResult('Status: ' + response.status + ' OK: ' + response.ok);
+                addResult('Content-Type: ' + response.headers.get('content-type'));
+                
+                if (!response.ok) {
+                    const text = await response.text();
+                    addResult('❌ Error body: ' + text, true);
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    addResult('❌ Non-JSON response: ' + text.substring(0, 200), true);
+                    throw new Error('Response is not JSON');
+                }
+                
+                const data = await response.json();
+                addResult('✅✅ Dashboard-style fetch worked! ' + JSON.stringify(data));
+            } catch (error) {
+                addResult('❌ Dashboard-style error: ' + error.name + ' - ' + error.message, true);
             }
         }
         
