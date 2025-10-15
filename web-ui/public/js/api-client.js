@@ -34,14 +34,30 @@ class APIClient {
             }
 
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || `HTTP ${response.status}`);
+                // Try to parse error as JSON, but if it's HTML, return empty data
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    const error = await response.json();
+                    throw new Error(error.message || `HTTP ${response.status}`);
+                } else {
+                    // Server returned HTML (likely 404 or error page)
+                    console.warn(`API endpoint not found or returned HTML: ${endpoint}`);
+                    return null; // Return null instead of throwing for missing endpoints
+                }
             }
 
-            return await response.json();
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return await response.json();
+            } else {
+                // Response is not JSON (probably HTML error page)
+                console.warn(`Non-JSON response from ${endpoint}`);
+                return null;
+            }
         } catch (error) {
             console.error(`API Error [${endpoint}]:`, error);
-            throw error;
+            // Return null for network/parsing errors instead of throwing
+            return null;
         }
     }
 

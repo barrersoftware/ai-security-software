@@ -563,7 +563,7 @@ async function renderSystemInfoView() {
 // Stub renderers for remaining plugins
 // ===== POLICIES PLUGIN =====
 async function renderPoliciesView() {
-    const policies = await apiClient.get('/api/plugins/policies/policies') || [];
+    const policies = await apiClient.get('/api/policies') || [];
     
     return {
         title: 'Scanning Policies',
@@ -630,7 +630,7 @@ async function renderPoliciesView() {
 
 // ===== RATE LIMITING PLUGIN =====
 async function renderRateLimitingView() {
-    const stats = await apiClient.get('/api/plugins/rate-limiting/stats') || { blocked: 0, allowed: 0, rules: [] };
+    const stats = await apiClient.get('/api/rate-limiting/limits') || { blocked: 0, allowed: 0, rules: [] };
     
     return {
         title: 'Rate Limiting',
@@ -712,7 +712,7 @@ async function renderRateLimitingView() {
 
 // ===== SECURITY PLUGIN =====
 async function renderSecurityView() {
-    const config = await apiClient.get('/api/plugins/security/config') || {};
+    const config = await apiClient.get('/api/security/config') || {};
     
     return {
         title: 'Security Services',
@@ -787,7 +787,7 @@ async function renderSecurityView() {
                     encryption: { enabled: document.getElementById('encryptionEnabled').checked },
                     headers: { enabled: document.getElementById('headersEnabled').checked }
                 };
-                await apiClient.post('/api/plugins/security/config', data);
+                await apiClient.post('/api/security/config', data);
                 showToast('success', 'Security configuration updated');
             };
             
@@ -803,7 +803,7 @@ async function renderSecurityView() {
 
 // ===== AUTH PLUGIN =====
 async function renderAuthView() {
-    const config = await apiClient.get('/api/plugins/auth/config') || {};
+    const config = await apiClient.get('/api/auth/config') || {};
     
     return {
         title: 'Authentication Services',
@@ -888,7 +888,7 @@ async function renderAuthView() {
                         session: { timeout: parseInt(document.getElementById('sessionTimeout').value) },
                         security: { maxAttempts: parseInt(document.getElementById('maxAttempts').value) }
                     };
-                    await apiClient.post('/api/plugins/auth/config', data);
+                    await apiClient.post('/api/auth/config', data);
                     showToast('success', 'Authentication configuration updated');
                 });
             }
@@ -898,7 +898,7 @@ async function renderAuthView() {
 
 // ===== TENANTS PLUGIN =====
 async function renderTenantsView() {
-    const tenants = await apiClient.get('/api/plugins/tenants/list') || [];
+    const tenants = await apiClient.get('/api/tenants') || [];
     
     return {
         title: 'Multi-Tenant Management',
@@ -970,7 +970,7 @@ async function renderTenantsView() {
 
 // ===== API ANALYTICS PLUGIN =====
 async function renderAPIAnalyticsView() {
-    const analytics = await apiClient.get('/api/plugins/api-analytics/stats') || {};
+    const analytics = await apiClient.get('/api/api-analytics/stats') || {};
     
     return {
         title: 'API Analytics',
@@ -1039,7 +1039,7 @@ async function renderAPIAnalyticsView() {
 
 // ===== MULTI-SERVER PLUGIN =====
 async function renderMultiServerView() {
-    const servers = await apiClient.get('/api/plugins/multi-server/servers') || [];
+    const servers = await apiClient.get('/api/multi-server/servers') || [];
     
     return {
         title: 'Multi-Server Management',
@@ -1118,7 +1118,7 @@ async function renderMultiServerView() {
 
 // ===== STORAGE PLUGIN =====
 async function renderStorageView() {
-    const storage = await apiClient.get('/api/plugins/storage/stats') || {};
+    const storage = await apiClient.get('/api/storage/info') || {};
     
     return {
         title: 'File Storage Management',
@@ -1202,7 +1202,7 @@ async function renderStorageView() {
 
 // ===== BACKUP & RECOVERY PLUGIN =====
 async function renderBackupRecoveryView() {
-    const backups = await apiClient.get('/api/plugins/backup-recovery/list') || [];
+    const backups = await apiClient.get('/api/backup/list') || [];
     
     return {
         title: 'Backup & Recovery',
@@ -1314,7 +1314,7 @@ async function renderBackupRecoveryView() {
 
 // ===== WEBHOOKS PLUGIN =====
 async function renderWebhooksView() {
-    const webhooks = await apiClient.get('/api/plugins/webhooks/list') || [];
+    const webhooks = await apiClient.get('/api/webhooks') || [];
     
     return {
         title: 'Webhooks',
@@ -1402,7 +1402,7 @@ async function renderWebhooksView() {
 
 // ===== NOTIFICATIONS PLUGIN =====
 async function renderNotificationsView() {
-    const notifications = await apiClient.get('/api/plugins/notifications/list') || [];
+    const notifications = await apiClient.get('/api/notifications') || [];
     
     return {
         title: 'Notifications',
@@ -1489,7 +1489,7 @@ async function renderNotificationsView() {
 
 // ===== UPDATE PLUGIN =====
 async function renderUpdateView() {
-    const updateInfo = await apiClient.get('/api/plugins/update/check') || {};
+    const updateInfo = await apiClient.get('/api/update/check') || {};
     
     return {
         title: 'System Updates',
@@ -1546,7 +1546,7 @@ async function renderUpdateView() {
         init: () => {
             window.checkUpdates = async () => {
                 showToast('info', 'Checking for updates...');
-                const result = await apiClient.get('/api/plugins/update/check');
+                const result = await apiClient.get('/api/update/check');
                 if (result.updateAvailable) {
                     showToast('success', `Update available: ${result.latestVersion}`);
                 } else {
