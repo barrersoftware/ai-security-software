@@ -33,3 +33,9 @@ docs/archive/chat-histories/
 docs/archive/checkpoints/
 docs/archive/old-sessions/
 docs/current/v4.*/
+
+# Test VPS Configuration (contains credentials)
+TEST_VPS_CONFIG.md
+
+# Local test environment files
+TEST_VPS_SETUP_COMPLETE.md
